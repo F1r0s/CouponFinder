@@ -1,0 +1,60 @@
+=========================================================
+THE BULLETPROOF CPA API LOCKER "MASTER PROMPT" (STRICT 1-OFFER & ANTI-BYPASS)
+=========================================================
+
+Context: I am building a custom, high-converting Content Locker for a landing page. I use the OGAds CPA network API to fetch live offers and display them in a custom UI matching the theme of my website, instead of using the generic third-party hosted iframe popup. I host this on Vercel / Node.js.
+
+API Configuration:
+- Endpoint: https://appcomplete.org/api/v2
+- Authorization Token: Bearer 47558|DluqLUTirEcifKUEHLp0wrBpqTebJR7XbTqwtkL666b7e813
+- Site Identifier: [ENTER_YOUR_SITE_NAME_HERE] (e.g. couponfinder, matchmasters, movieunlock)
+
+Please build this system adhering strictly to these requirements:
+
+1. STRICT COMPLETION REQUIREMENT (EXACTLY 1 OFFER):
+- The visitor must have the CHOICE between Offer 1 and Offer 2.
+- The visitor must complete EXACTLY ONE offer to unlock the content.
+- COMPLETION IS MANDATORY: The visitor CANNOT bypass, hack, or fake completion under any circumstances.
+- Do NOT include any client-side auto-unlock timers, fake "Check Now" auto-completes, or bypass buttons.
+- The content/code must remain strictly locked and masked until the backend endpoint confirms a genuine completion from the CPA network postback.
+
+2. MULTI-LANDING PAGE POSTBACK ROUTING:
+- Multiple landing pages share this same OGAds account.
+- When generating or clicking an offer link, the frontend MUST append:
+  &aff_sub4=[SITE_IDENTIFIER]&aff_sub5=[USER_IP]
+- This enables the global OGAds postback to return the exact site identifier and user IP:
+  https://YOUR-MAIN-DOMAIN.com/api/postback?ip={ip}&offerid={offer_id}&payout={payout}&site={aff_sub4}
+- The postback endpoint (api/postback.js) records the verified completion for that visitor's IP and session.
+
+3. BACKEND PROXY ENDPOINT (api/offers.js):
+- Secure serverless function that proxies:
+  https://appcomplete.org/api/v2?ip=[USER_IP]&user_agent=[USER_AGENT]&max=50
+- Headers: Authorization: Bearer [API_TOKEN]
+- Captures visitor real IP (x-forwarded-for, x-real-ip) and user-agent.
+- Sorts offers: prioritize boosted offers first (offer.boosted === true), then sort by payout descending.
+- Maps top 2 offers to clean JSON: { id, name, description, image, link, payout, boosted }.
+
+4. BACKEND VERIFICATION ENDPOINT (api/check.js & api/postback.js):
+- api/check.js: Checks if the visitor's IP or session has completed an offer.
+  Returns { completed: true } ONLY if a verified postback has been received. Otherwise returns { completed: false }.
+- api/postback.js: Receives conversion pings from OGAds, marks the user's IP as completed, and acknowledges with 200 OK.
+
+5. FRONTEND LOCKER UI (Matching Website Theme):
+- Design a premium modal matching the site's colors and typography.
+- Progress Stepper: "Step 1: Verify (Active)" -> "Step 2: Unlocked".
+- Clear Instructions: "Complete 1 Offer to Unlock — Choose either Offer 1 or Offer 2 below. You only need to finish 1 offer to unlock your code!"
+- Dynamic Offer Cards: Render the 2 offers with real CDN icons, badges (Fast Unlock / Most Popular), titles, descriptions, and action buttons.
+- Both offers must be active and clickable choices.
+
+6. FRONTEND LOCKER LOGIC:
+- When the page loads, fetch offers from /api/offers.
+- When the user clicks an offer:
+  1. Opens the tracking link in a new tab with &aff_sub4=[site]&aff_sub5=[ip].
+  2. The clicked button turns into a smooth spinner: "Awaiting Completion...".
+  3. Displays a live status bar: "Activity opened in new tab. Finish the activity, then check status."
+  4. Starts polling /api/check every 5 seconds.
+- When the user clicks "Check Status":
+  - Strictly queries /api/check.
+  - If incomplete (completed: false): REFUSES to unlock! Displays an error: "❌ Not completed yet! Please finish the activity in your opened tab." Keeps the content locked!
+  - If complete (completed: true): Plays celebration animation, reveals full unmasked code/content, and enables one-click copy.
+- 10-Hour Bypass: Once verified, saves the unlock timestamp in localStorage (e.g. locker_unlocked_[id]) so the user gets 10 hours of uninterrupted access without seeing the locker again.
