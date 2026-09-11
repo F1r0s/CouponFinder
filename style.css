@@ -33,6 +33,20 @@
     --header-height: 60px;
 }
 
+[data-theme="dark"] {
+    --bg: #0f172a;
+    --bg-secondary: #1e293b;
+    --bg-card: #1e293b;
+    --text: #f8fafc;
+    --text-secondary: #cbd5e1;
+    --text-third: #94a3b8;
+    --border: #334155;
+    --border-light: #475569;
+    --shadow-card: 0 4px 6px -1px rgba(0, 0, 0, 0.5), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
+    --shadow-card-hover: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -2px rgba(0, 0, 0, 0.3);
+    --shadow-modal: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+}
+
 html {
     scroll-behavior: smooth;
 }

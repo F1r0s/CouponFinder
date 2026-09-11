@@ -608,7 +608,56 @@ function renderLockerOffers() {
 }
 
 // Step 1 → Step 2: "Show Coupon Code" button
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+    // --- Theme Toggle Logic ---
+    const themeToggle = document.getElementById('themeToggle');
+    const rootHtml = document.documentElement;
+    const body = document.body;
+
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    if (savedTheme === 'dark') {
+        rootHtml.setAttribute('data-theme', 'dark');
+        body.classList.remove('theme-light');
+        body.classList.add('theme-dark');
+        themeToggle.innerHTML = '<i class="bi bi-sun-fill"></i>';
+    }
+
+    themeToggle.addEventListener('click', () => {
+        if (rootHtml.getAttribute('data-theme') === 'dark') {
+            rootHtml.setAttribute('data-theme', 'light');
+            body.classList.remove('theme-dark');
+            body.classList.add('theme-light');
+            themeToggle.innerHTML = '<i class="bi bi-moon-fill"></i>';
+            localStorage.setItem('theme', 'light');
+        } else {
+            rootHtml.setAttribute('data-theme', 'dark');
+            body.classList.remove('theme-light');
+            body.classList.add('theme-dark');
+            themeToggle.innerHTML = '<i class="bi bi-sun-fill"></i>';
+            localStorage.setItem('theme', 'dark');
+        }
+    });
+
+    // --- Dynamic Coupons Loading (Groupon) ---
+    try {
+        const response = await fetch('groupon.json');
+        if (response.ok) {
+            const extraCoupons = await response.json();
+            if (Array.isArray(extraCoupons) && extraCoupons.length > 0) {
+                // Determine highest ID to avoid conflicts
+                let maxId = 0;
+                couponsData.forEach(c => { if(c.id > maxId) maxId = c.id; });
+                
+                extraCoupons.forEach((coupon, index) => {
+                    coupon.id = maxId + index + 1;
+                    couponsData.push(coupon);
+                });
+            }
+        }
+    } catch (e) {
+        console.log("No extra groupon coupons found or error loading them.");
+    }
+
     renderCoupons();
     initSearch();
     initFilters();
