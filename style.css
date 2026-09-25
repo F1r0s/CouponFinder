@@ -1564,3 +1564,5 @@ body {
     background: var(--bg);
     color: var(--text);
 }
+
+.lang-selector.open .lang-menu { display: block; }

@@ -461,14 +461,14 @@ function buildCard(coupon, index) {
 function formatPartialCode(code) {
     if (!code) return '';
     const visible = code.slice(0, -3);
-    const hidden = 'Ã¢â‚¬Â¢'.repeat(3);
+    const hidden = 'ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢'.repeat(3);
     return visible + hidden;
 }
 
 function formatMaskedCode(code) {
     if (!code) return '';
     const visible = code.slice(-4);
-    const hidden = 'Ã¢â‚¬Â¢'.repeat(code.length - 4);
+    const hidden = 'â€¢'.repeat(code.length - 4);
     return hidden + visible;
 }
 
@@ -650,7 +650,7 @@ function renderLockerOffers() {
         card.id = `offerCard_${offer.id}`;
         card.onclick = (e) => handleOfferClick(offer, card, e);
 
-        const badgeText = index === 0 ? 'Ã¢Å¡Â¡ Fast Unlock' : 'Ã¢Ëœâ€¦ Most Popular';
+        const badgeText = index === 0 ? 'ÃƒÂ¢Ã…Â¡Ã‚Â¡ Fast Unlock' : 'ÃƒÂ¢Ã‹Å“Ã¢â‚¬Â¦ Most Popular';
 
         card.innerHTML = `
             <div class="offer-icon-wrapper">
@@ -672,7 +672,7 @@ function renderLockerOffers() {
     });
 }
 
-// Step 1 Ã¢â€ â€™ Step 2: "Show Coupon Code" button
+// Step 1 ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ Step 2: "Show Coupon Code" button
 document.addEventListener('DOMContentLoaded', async () => {
     // --- Theme Toggle Logic ---
     const themeToggle = document.getElementById('themeToggle');
@@ -751,7 +751,29 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    document.getElementById('btnShowCode').addEventListener('click', goToStep2);
+    document.getElementById('btnShowCode').addEventListener('click', () => {
+        const btn = document.getElementById('btnShowCode');
+        const codeEl = document.getElementById('modalMaskedCode');
+        if (btn.classList.contains('loading')) return;
+        
+        btn.classList.add('loading');
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '<span class="btn-spinner"></span> Generating...';
+        
+        // Animation effect
+        let iterations = 0;
+        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+        const interval = setInterval(() => {
+            codeEl.textContent = Array(8).fill(0).map(() => chars[Math.floor(Math.random() * chars.length)]).join('');
+            iterations++;
+            if (iterations > 15) {
+                clearInterval(interval);
+                btn.classList.remove('loading');
+                btn.innerHTML = originalText;
+                goToStep2();
+            }
+        }, 50);
+    });
     document.getElementById('modalClose').addEventListener('click', closeModal);
 
     // Close on overlay click
@@ -942,7 +964,7 @@ function completeUnlock() {
     // 3. Status Bar Success
     const statusBar = document.getElementById('apiLockerStatus');
     statusBar.classList.remove('hidden');
-    document.getElementById('apiLockerStatusMsg').innerHTML = '<strong style="color:var(--accent);">Ã¢Å“â€œ Activity verified successfully!</strong>';
+    document.getElementById('apiLockerStatusMsg').innerHTML = '<strong style="color:var(--accent);">ÃƒÂ¢Ã…â€œÃ¢â‚¬Å“ Activity verified successfully!</strong>';
 
     // 4. Save to localStorage (10 hours bypass)
     const unlockKey = `cf_unlocked_${activeCoupon.id}`;
@@ -1078,43 +1100,3 @@ function initFilters() {
     });
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-    // 1. Initialize coupons
-    if (typeof renderCoupons === 'function') renderCoupons('all');
-    if (typeof initSearch === 'function') initSearch();
-    if (typeof initFilters === 'function') initFilters();
-
-    // 2. Initialize Language
-    if (typeof loadTranslations === 'function') loadTranslations();
-    const langBtn = document.getElementById('langBtn');
-    const langMenu = document.getElementById('langMenu');
-    if (langBtn && langMenu) {
-        langBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            langMenu.classList.toggle('show');
-        });
-        document.addEventListener('click', (e) => {
-            if (!langBtn.contains(e.target) && !langMenu.contains(e.target)) {
-                langMenu.classList.remove('show');
-            }
-        });
-        document.querySelectorAll('.lang-item').forEach(btn => {
-            btn.addEventListener('click', () => {
-                applyLanguage(btn.dataset.lang);
-                langMenu.classList.remove('show');
-            });
-        });
-    }
-
-    // 3. Initialize Theme
-    const themeBtn = document.getElementById('themeToggle');
-    if (themeBtn) {
-        const currentTheme = localStorage.getItem('theme') || 'light';
-        document.documentElement.setAttribute('data-theme', currentTheme);
-        themeBtn.addEventListener('click', () => {
-            const newTheme = document.documentElement.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
-            document.documentElement.setAttribute('data-theme', newTheme);
-            localStorage.setItem('theme', newTheme);
-        });
-    }
-});
