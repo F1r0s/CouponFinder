@@ -1,1 +1,4 @@
-[]
+// --- Dynamic Coupons Loading (Groupon) ---
+    try {
+        const response = await fetch('/groupon.json');
+        if (response.ok) {

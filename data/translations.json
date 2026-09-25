@@ -1,0 +1,5 @@
+[REPLACE: api/sitemap.js]
+  // Return the sitemap as XML
+  res.setHeader('Content-Type', 'application/xml');
+  res.send(sitemap.toXML());
+});

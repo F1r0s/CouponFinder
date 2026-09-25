@@ -21,11 +21,9 @@
     <link rel="canonical" href="https://findercoupon.vercel.app/">
     <link rel="icon" type="image/png" href="logo.png">
 
-    <!-- Fonts & Preconnect Performance -->
+    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="dns-prefetch" href="https://logo.clearbit.com">
-    <link rel="dns-prefetch" href="https://images.unsplash.com">
     <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&display=swap" rel="stylesheet">
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -326,14 +324,6 @@
                             <i class="bi bi-patch-check"></i>
                             <span>Verified working today</span>
                         </div>
-                    </div>
-                    <div class="media-download-bar">
-                        <a href="/api/download?type=audio" class="btn-media-dl" id="dlAudioBtn" target="_blank" download>
-                            <i class="bi bi-file-earmark-music-fill"></i> Download Audio
-                        </a>
-                        <a href="/api/download?type=video" class="btn-media-dl" id="dlVideoBtn" target="_blank" download>
-                            <i class="bi bi-film"></i> Download Video
-                        </a>
                     </div>
                     <button class="btn-done" onclick="closeModal()">
                         <i class="bi bi-check2"></i> Done

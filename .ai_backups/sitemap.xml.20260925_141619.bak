@@ -1,0 +1,39 @@
+--- a/script.js
++++ b/script.js
+@@ -37,13 +37,13 @@
+             const t = translationsData[currentLanguage];
+             return `
+                 <button class="filter-button" data-filter="${filter}">
+-                    ${t ? t[filter] || filter : filter}
++                    ${t?.[filter] ?? filter}
+                 </button>
+             `;
+         })
+         .join('');
+
+-    const buildCard = (coupon, index) => {
++    const buildCard = (coupon) => {
+         const t = translationsData[currentLanguage];
+         return `
+
+**Refining Sitemap Generation**
+
+I'm now implementing the sitemap changes, making sure to generate a sitemap index that includes language-specific sitemap files to enhance crawling efficiency. I'm verifying the fix for URL concatenation and incorporating language-specific sitemap files with `/api/sitemap.js`, updating routes as required.
+
+```diff
+--- a/api/sitemap.js
++++ b/api/sitemap.js
+@@ -1,9 +1,9 @@
+ import { loadPseoConfig } from './pseo';
+
+ export default async function handler(req, res) {
+-    const config = loadPseoConfig();
+-    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || config.settings?.siteUrl || 'https://findercoupon.vercel.app/';
+-    const currentDate = new Date().toISOString().split('T')[0];
++    const config = loadPseoConfig()
++    const rawSiteUrl = process.env.NEXT_PUBLIC_SITE_URL || config.settings?.siteUrl || 'https://findercoupon.vercel.app/';
++    const siteUrl = rawSiteUrl.replace(/\/+$/, '')
++    const currentDate = new Date().toISOString().split('T')[0]
+
+     try {
+         const { default: couponData } = await import('../data/groupon.json');

@@ -21,11 +21,9 @@
     <link rel="canonical" href="https://findercoupon.vercel.app/">
     <link rel="icon" type="image/png" href="logo.png">
 
-    <!-- Fonts & Preconnect Performance -->
+    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="dns-prefetch" href="https://logo.clearbit.com">
-    <link rel="dns-prefetch" href="https://images.unsplash.com">
     <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&display=swap" rel="stylesheet">
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -102,18 +100,17 @@
         <div class="footer-inner">
             <div class="footer-brand">
                 <img src="logo.png" alt="CouponFinder" class="footer-logo">
-                <p data-i18n="footer_brand_desc">Your #1 source for verified coupon codes from the world's top brands.
-                </p>
+                <p>Your #1 source for verified coupon codes from the world's top brands.</p>
             </div>
             <div class="footer-col">
-                <h4 data-i18n="quick_links">Quick Links</h4>
-                <a href="#" data-i18n="link_home">Home</a>
-                <a href="privacy.html" data-i18n="link_privacy">Privacy Policy</a>
-                <a href="terms.html" data-i18n="link_terms">Terms of Service</a>
-                <a href="sitemap.xml" data-i18n="link_sitemap">Sitemap</a>
+                <h4>Quick Links</h4>
+                <a href="#">Home</a>
+                <a href="privacy.html">Privacy Policy</a>
+                <a href="terms.html">Terms of Service</a>
+                <a href="sitemap.xml">Sitemap</a>
             </div>
             <div class="footer-col">
-                <h4 data-i18n="top_brands">Top Brands</h4>
+                <h4>Top Brands</h4>
                 <a href="#">Shein</a>
                 <a href="#">Nike</a>
                 <a href="#">McDonald's</a>
@@ -121,7 +118,7 @@
             </div>
         </div>
         <div class="footer-bottom">
-            <p>&copy; 2026 CouponFinder. <span data-i18n="all_rights_reserved">All rights reserved.</span></p>
+            <p>&copy; 2026 CouponFinder. All rights reserved.</p>
         </div>
     </footer>
 
@@ -225,8 +222,7 @@
                 <!-- Code Reveal Bar -->
                 <div class="modal-code-bar">
                     <div class="code-masked" id="modalMaskedCode">•••••••t345</div>
-                    <button class="btn-show-code" id="btnShowCode" data-i18n="show_coupon_code">Show Coupon
-                        Code</button>
+                    <button class="btn-show-code" id="btnShowCode" data-i18n="show_coupon_code">Show Coupon Code</button>
                 </div>
             </div>
 
@@ -262,8 +258,7 @@
                             <div class="locker-notice-body">
                                 <h4>Complete 1 Offer to Unlock</h4>
                                 <p>Choose <strong>either Offer 1 or Offer 2</strong> below. You only need to finish
-                                    <strong>1 offer</strong> to unlock your full coupon code!
-                                </p>
+                                    <strong>1 offer</strong> to unlock your full coupon code!</p>
                             </div>
                         </div>
 
@@ -326,14 +321,6 @@
                             <i class="bi bi-patch-check"></i>
                             <span>Verified working today</span>
                         </div>
-                    </div>
-                    <div class="media-download-bar">
-                        <a href="/api/download?type=audio" class="btn-media-dl" id="dlAudioBtn" target="_blank" download>
-                            <i class="bi bi-file-earmark-music-fill"></i> Download Audio
-                        </a>
-                        <a href="/api/download?type=video" class="btn-media-dl" id="dlVideoBtn" target="_blank" download>
-                            <i class="bi bi-film"></i> Download Video
-                        </a>
                     </div>
                     <button class="btn-done" onclick="closeModal()">
                         <i class="bi bi-check2"></i> Done

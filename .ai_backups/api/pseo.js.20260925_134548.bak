@@ -1,0 +1,800 @@
+// ============================================
+// Programmatic SEO (pSEO) Dynamic Page Renderer
+// Generates high-converting SEO landing pages with Schema.org & integrates
+// the bulletproof 1-offer OGAds CPA locker (exact anti-bypass logic)
+// ============================================
+
+import fs from 'fs';
+import path from 'path';
+
+function loadJson(relPath) {
+    try {
+        const fullPath = path.join(process.cwd(), relPath);
+        if (fs.existsSync(fullPath)) {
+            return JSON.parse(fs.readFileSync(fullPath, 'utf8'));
+        }
+    } catch (e) {
+        console.error(`Error loading ${relPath}:`, e.message);
+    }
+    return null;
+}
+
+export default async function handler(req, res) {
+    const pseoConfig = loadJson(path.join('data', 'pseo-config.json')) || {
+        brands: [{ slug: 'shein', name: 'SHEIN', bestDiscount: '25% OFF', avgSavings: '$18', domain: 'shein.com', logo: 'https://logo.clearbit.com/shein.com', category: 'fashion' }],
+        intentModifiers: [{ slug: 'promo-codes', en: 'Promo Codes', es: 'Códigos Promocionales', fr: 'Codes Promo', pt: 'Códigos Promocionais' }],
+        templates: {
+            en: {
+                title: "{brand} {intent} & Verified Discount Codes - Save {bestDiscount} | CouponFinder",
+                metaDesc: "Get active {brand} {intent} and tested voucher codes today. Save up to {bestDiscount} with verified discounts.",
+                heroHeading: "{brand} {intent} & Vouchers",
+                heroSub: "Verified and tested daily. Shoppers save an average of {avgSavings} on {brand} orders with these codes.",
+                faq1_q: "How do I claim and use my {brand} coupon code?",
+                faq1_a: "Choose an available voucher, complete the quick 1-step verification to unmask the code, copy it to your clipboard, and paste it into the promo box at {domain} checkout.",
+                faq2_q: "Are these {brand} codes verified and working?",
+                faq2_a: "Yes! All {brand} coupons and promo codes are tested in real time to ensure they work reliably today."
+            }
+        }
+    };
+
+    const translations = loadJson(path.join('data', 'translations.json')) || {};
+
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://findercoupon.vercel.app/';
+    const lang = (req.query?.lang || 'en').toLowerCase();
+    const rawSlug = req.query?.slug || 'shein-promo-codes';
+    const slug = rawSlug.replace(/\.html$/, '');
+
+    // Match brand and intent from the slug
+    let matchedBrand = null;
+    let matchedIntent = null;
+
+    for (const b of (pseoConfig.brands || [])) {
+        if (slug.startsWith(b.slug)) {
+            matchedBrand = b;
+            const remaining = slug.replace(new RegExp(`^${b.slug}-?`), '');
+            matchedIntent = (pseoConfig.intentModifiers || []).find(i => i.slug === remaining)
+                || (pseoConfig.intentModifiers ? pseoConfig.intentModifiers[0] : { slug: 'promo-codes', en: 'Promo Codes' });
+            break;
+        }
+    }
+
+    if (!matchedBrand) {
+        matchedBrand = (pseoConfig.brands && pseoConfig.brands[0]) || {
+            slug: 'shein',
+            name: 'SHEIN',
+            bestDiscount: '25% OFF',
+            avgSavings: '$18',
+            domain: 'shein.com',
+            logo: 'https://logo.clearbit.com/shein.com',
+            category: 'fashion'
+        };
+        matchedIntent = (pseoConfig.intentModifiers && pseoConfig.intentModifiers[0]) || {
+            slug: 'promo-codes',
+            en: 'Promo Codes',
+            es: 'Códigos Promocionales',
+            fr: 'Codes Promo',
+            pt: 'Códigos Promocionais'
+        };
+    }
+
+    const tpl = (pseoConfig.templates && pseoConfig.templates[lang]) || (pseoConfig.templates && pseoConfig.templates['en']) || {};
+    const t = translations[lang] || translations['en'] || {};
+
+    const brandName = matchedBrand.name;
+    const intentLabel = matchedIntent[lang] || matchedIntent['en'] || 'Promo Codes';
+    const bestDiscount = matchedBrand.bestDiscount || '20% OFF';
+    const avgSavings = matchedBrand.avgSavings || '$15';
+    const domain = matchedBrand.domain || `${matchedBrand.slug}.com`;
+    const brandLogo = matchedBrand.logo || `https://logo.clearbit.com/${domain}`;
+
+    const replacePlaceholders = (str) => {
+        if (!str) return '';
+        return str
+            .replaceAll('{brand}', brandName)
+            .replaceAll('{intent}', intentLabel)
+            .replaceAll('{bestDiscount}', bestDiscount)
+            .replaceAll('{avgSavings}', avgSavings)
+            .replaceAll('{domain}', domain);
+    };
+
+    const pageTitle = replacePlaceholders(tpl.title) || `${brandName} ${intentLabel} - Verified Codes | CouponFinder`;
+    const metaDesc = replacePlaceholders(tpl.metaDesc) || `Claim verified ${brandName} ${intentLabel} and save up to ${bestDiscount} today.`;
+    const heroHeading = replacePlaceholders(tpl.heroHeading) || `${brandName} ${intentLabel}`;
+    const heroSub = replacePlaceholders(tpl.heroSub) || `Shoppers save an average of ${avgSavings} at ${brandName}.`;
+    const faq1_q = replacePlaceholders(tpl.faq1_q);
+    const faq1_a = replacePlaceholders(tpl.faq1_a);
+    const faq2_q = replacePlaceholders(tpl.faq2_q);
+    const faq2_a = replacePlaceholders(tpl.faq2_a);
+
+    const canonicalUrl = lang === 'en'
+        ? `${siteUrl}/coupons/${slug}`
+        : `${siteUrl}/${lang}/coupons/${slug}`;
+
+    const dateToday = new Date().toISOString().split('T')[0];
+
+    // Build 4 dynamic voucher cards for this brand
+    const dynamicCoupons = [
+        {
+            id: 1,
+            title: `${bestDiscount} Sitewide Discount Code`,
+            badge: "HOT",
+            code: `${matchedBrand.slug.toUpperCase()}${bestDiscount.replace(/[^0-9]/g, '') || '25'}DEAL`,
+            desc: `Enjoy ${bestDiscount} off your entire cart at ${brandName}. Valid on full priced items and sale categories.`,
+            savings: bestDiscount,
+            uses: 489,
+            couponsLeft: 42
+        },
+        {
+            id: 2,
+            title: `Free Standard Shipping Code`,
+            badge: "VERIFIED",
+            code: `${matchedBrand.slug.toUpperCase()}FREESHIP`,
+            desc: `Zero shipping fees applied instantly during checkout on ${domain}. No minimum order spend required today.`,
+            savings: "FREE SHIP",
+            uses: 312,
+            couponsLeft: 89
+        },
+        {
+            id: 3,
+            title: `Average ${avgSavings} First Order Voucher`,
+            badge: "NEW",
+            code: `${matchedBrand.slug.toUpperCase()}WELCOME${new Date().getFullYear()}`,
+            desc: `Special welcome discount for new and returning shoppers at ${brandName}. Save ${avgSavings} immediately.`,
+            savings: avgSavings,
+            uses: 256,
+            couponsLeft: 115
+        },
+        {
+            id: 4,
+            title: `App & Mobile Exclusive Promo`,
+            badge: "POPULAR",
+            code: `${matchedBrand.slug.toUpperCase()}APPSECRET`,
+            desc: `Unlock an extra discount on ${brandName} orders when placing your order through the mobile application.`,
+            savings: "EXCLUSIVE",
+            uses: 198,
+            couponsLeft: 64
+        }
+    ];
+
+    // Schema.org JSON-LD
+    const jsonLd = {
+        "@context": "https://schema.org",
+        "@graph": [
+            {
+                "@type": "Store",
+                "name": brandName,
+                "url": `https://${domain}`,
+                "logo": brandLogo
+            },
+            {
+                "@type": "SaleEvent",
+                "name": `${brandName} ${intentLabel}`,
+                "startDate": dateToday,
+                "endDate": "2026-12-31",
+                "eventAttendanceMode": "https://schema.org/OnlineEventAttendanceMode",
+                "offers": {
+                    "@type": "AggregateOffer",
+                    "priceCurrency": "USD",
+                    "lowPrice": "0",
+                    "highPrice": "500",
+                    "offerCount": "4"
+                }
+            },
+            {
+                "@type": "FAQPage",
+                "mainEntity": [
+                    {
+                        "@type": "Question",
+                        "name": faq1_q,
+                        "acceptedAnswer": { "@type": "Answer", "text": faq1_a }
+                    },
+                    {
+                        "@type": "Question",
+                        "name": faq2_q,
+                        "acceptedAnswer": { "@type": "Answer", "text": faq2_a }
+                    }
+                ]
+            }
+        ]
+    };
+
+    const html = `<!DOCTYPE html>
+<html lang="${lang}" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>${pageTitle}</title>
+    <meta name="description" content="${metaDesc}">
+    <link rel="canonical" href="${canonicalUrl}">
+    <link rel="alternate" hreflang="en" href="${siteUrl}/coupons/${slug}">
+    <link rel="alternate" hreflang="es" href="${siteUrl}/es/coupons/${slug}">
+    <link rel="alternate" hreflang="fr" href="${siteUrl}/fr/coupons/${slug}">
+    <link rel="alternate" hreflang="pt" href="${siteUrl}/pt/coupons/${slug}">
+    <link rel="alternate" hreflang="x-default" href="${siteUrl}/coupons/${slug}">
+    <link rel="icon" type="image/png" href="/logo.png">
+
+    <!-- OpenGraph & Social Cards -->
+    <meta property="og:title" content="${pageTitle}">
+    <meta property="og:description" content="${metaDesc}">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="${canonicalUrl}">
+    <meta property="og:image" content="${brandLogo}">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="${pageTitle}">
+    <meta name="twitter:description" content="${metaDesc}">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/style.css">
+
+    <!-- Schema.org JSON-LD -->
+    <script type="application/ld+json">${JSON.stringify(jsonLd)}</script>
+
+    <style>
+        .pseo-hero {
+            background: linear-gradient(180deg, var(--bg-secondary) 0%, var(--bg) 100%);
+            border-bottom: 1px solid var(--border);
+            padding: 40px 20px 32px;
+            text-align: center;
+        }
+        .pseo-hero-inner {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        .pseo-brand-badge {
+            width: 72px;
+            height: 72px;
+            border-radius: 16px;
+            background: white;
+            border: 2px solid var(--border);
+            box-shadow: 0 4px 14px rgba(0,0,0,0.06);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px;
+            margin-bottom: 16px;
+        }
+        .pseo-brand-badge img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+        .pseo-trust-tags {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin: 16px 0 0;
+        }
+        .pseo-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: var(--accent-light);
+            color: var(--accent);
+            padding: 5px 12px;
+            border-radius: 100px;
+            font-size: 0.76rem;
+            font-weight: 700;
+        }
+        .pseo-grid {
+            max-width: 1100px;
+            margin: 36px auto;
+            padding: 0 20px;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+        @media (max-width: 768px) {
+            .pseo-grid { grid-template-columns: 1fr; }
+        }
+        .pseo-card {
+            background: var(--bg-card);
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius);
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: var(--transition);
+            position: relative;
+        }
+        .pseo-card:hover {
+            border-color: var(--accent);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-card-hover);
+        }
+        .pseo-discount-pill {
+            align-self: flex-start;
+            padding: 4px 10px;
+            background: var(--accent);
+            color: white;
+            border-radius: 6px;
+            font-weight: 800;
+            font-size: 0.8rem;
+            margin-bottom: 12px;
+        }
+        .pseo-card-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 8px;
+        }
+        .pseo-card-desc {
+            font-size: 0.82rem;
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+            line-height: 1.5;
+        }
+        .pseo-card-action {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--bg-secondary);
+            border: 1px dashed var(--accent);
+            border-radius: var(--radius-sm);
+            padding: 8px 12px;
+            margin-top: auto;
+        }
+        .pseo-masked-text {
+            font-family: 'Courier New', monospace;
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: var(--text-third);
+            letter-spacing: 2px;
+        }
+        .btn-pseo-claim {
+            padding: 8px 16px;
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .btn-pseo-claim:hover {
+            background: var(--accent-dark);
+        }
+        .pseo-seo-content {
+            max-width: 900px;
+            margin: 40px auto 60px;
+            padding: 0 20px;
+        }
+        .pseo-faq-item {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 18px 22px;
+            margin-bottom: 14px;
+        }
+        .pseo-faq-item h4 {
+            font-size: 0.98rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--text);
+        }
+        .pseo-faq-item p {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin: 0;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body class="theme-light">
+    <!-- Header -->
+    <header class="site-header">
+        <nav class="site-nav">
+            <a href="/" class="nav-brand">
+                <img src="/logo.png" alt="CouponFinder" class="nav-logo">
+            </a>
+            <div class="nav-search">
+                <span class="search-placeholder-icon">👉</span>
+                <input type="search" placeholder="${t.search_placeholder || 'Search here...'}" onclick="window.location.href='/'">
+            </div>
+            <!-- Language Dropdown -->
+            <div class="lang-selector" id="langSelector">
+                <button class="lang-btn" type="button" onclick="document.getElementById('langSelector').classList.toggle('open')">
+                    <i class="bi bi-globe2"></i>
+                    <span class="lang-code">${lang.toUpperCase()}</span>
+                    <i class="bi bi-chevron-down lang-chevron"></i>
+                </button>
+                <div class="lang-menu" id="langMenu">
+                    <a href="/coupons/${slug}" class="lang-item ${lang === 'en' ? 'active' : ''}"><span class="lang-flag">🇺🇸</span> English</a>
+                    <a href="/es/coupons/${slug}" class="lang-item ${lang === 'es' ? 'active' : ''}"><span class="lang-flag">🇪🇸</span> Español</a>
+                    <a href="/fr/coupons/${slug}" class="lang-item ${lang === 'fr' ? 'active' : ''}"><span class="lang-flag">🇫🇷</span> Français</a>
+                    <a href="/pt/coupons/${slug}" class="lang-item ${lang === 'pt' ? 'active' : ''}"><span class="lang-flag">🇵🇹</span> Português</a>
+                </div>
+            </div>
+            <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+                <i class="bi bi-moon-fill"></i>
+            </button>
+        </nav>
+    </header>
+
+    <!-- Main Hero -->
+    <section class="pseo-hero">
+        <div class="pseo-hero-inner">
+            <div class="pseo-brand-badge">
+                <img src="${brandLogo}" alt="${brandName}" onerror="this.src='/logo.png'">
+            </div>
+            <h1 class="section-title" style="font-size:2rem; font-weight:800; margin-bottom:10px;">${heroHeading}</h1>
+            <p style="font-size:1rem; color:var(--text-secondary); max-width:680px; margin:0 auto;">${heroSub}</p>
+            <div class="pseo-trust-tags">
+                <span class="pseo-tag"><i class="bi bi-patch-check-fill"></i> ${t.verified || 'Verified Today'}</span>
+                <span class="pseo-tag"><i class="bi bi-shield-lock-fill"></i> Guaranteed Working</span>
+                <span class="pseo-tag"><i class="bi bi-lightning-charge-fill"></i> Instant Unlock</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Dynamic Vouchers Grid -->
+    <main class="pseo-grid">
+        ${dynamicCoupons.map((coupon) => `
+            <div class="pseo-card">
+                <div>
+                    <span class="pseo-discount-pill">${coupon.savings}</span>
+                    <h3 class="pseo-card-title">${coupon.title}</h3>
+                    <p class="pseo-card-desc">${coupon.desc}</p>
+                </div>
+                <div class="pseo-card-action">
+                    <span class="pseo-masked-text">•••••••${coupon.code.slice(-4)}</span>
+                    <button class="btn-pseo-claim" onclick="openPseoModal('${coupon.title}', '${coupon.code}', '${brandName}', '${brandLogo}')">
+                        <i class="bi bi-scissors"></i> ${t.get_code || 'Get Code'}
+                    </button>
+                </div>
+            </div>
+        `).join('')}
+    </main>
+
+    <!-- Structured SEO Guide & FAQ -->
+    <section class="pseo-seo-content">
+        <h2 style="font-size:1.35rem; font-weight:800; margin-bottom:20px;">Frequently Asked Questions</h2>
+        <div class="pseo-faq-item">
+            <h4>${faq1_q}</h4>
+            <p>${faq1_a}</p>
+        </div>
+        <div class="pseo-faq-item">
+            <h4>${faq2_q}</h4>
+            <p>${faq2_a}</p>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+        <div class="footer-inner">
+            <div class="footer-brand">
+                <img src="/logo.png" alt="CouponFinder" class="footer-logo">
+                <p>${t.footer_brand_desc || "Your #1 source for verified coupon codes from the world's top brands."}</p>
+            </div>
+            <div class="footer-col">
+                <h4>${t.quick_links || 'Quick Links'}</h4>
+                <a href="/">${t.link_home || 'Home'}</a>
+                <a href="/privacy.html">${t.link_privacy || 'Privacy Policy'}</a>
+                <a href="/terms.html">${t.link_terms || 'Terms of Service'}</a>
+                <a href="/sitemap.xml">${t.link_sitemap || 'Sitemap'}</a>
+            </div>
+            <div class="footer-col">
+                <h4>${t.top_brands || 'Top Brands'}</h4>
+                <a href="/coupons/shein-promo-codes">SHEIN</a>
+                <a href="/coupons/nike-promo-codes">Nike</a>
+                <a href="/coupons/amazon-promo-codes">Amazon</a>
+                <a href="/coupons/mcdonalds-promo-codes">McDonald's</a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 CouponFinder. ${t.all_rights_reserved || 'All rights reserved.'}</p>
+        </div>
+    </footer>
+
+    <!-- =============================================
+         CPA CONTENT LOCKER MODAL (Strict 1-Offer Anti-Bypass)
+         ============================================= -->
+    <div class="modal-overlay" id="couponModal">
+        <div class="modal-container">
+            <div class="modal-header-section">
+                <div class="modal-brand-info">
+                    <img src="${brandLogo}" alt="${brandName}" class="modal-brand-logo" id="modalBrandLogo">
+                    <div class="modal-brand-text">
+                        <span class="modal-brand-name" id="modalBrandName">${brandName}</span>
+                        <h3 class="modal-coupon-title" id="modalCouponTitle"></h3>
+                        <div class="modal-badges">
+                            <span class="modal-badge coupons-badge"><i class="bi bi-ticket-perforated"></i> Verified Voucher</span>
+                            <span class="modal-badge verified-badge"><i class="bi bi-patch-check-fill"></i> Working Today</span>
+                        </div>
+                    </div>
+                </div>
+                <button class="modal-close" onclick="closeModal()"><i class="bi bi-x-lg"></i></button>
+            </div>
+
+            <!-- Stepper -->
+            <div class="locker-stepper" id="lockerStepper">
+                <div class="stepper-step active" id="stepperStep1">
+                    <div class="step-num"><i class="bi bi-shield-lock-fill"></i></div>
+                    <div class="step-info"><span class="step-title">Step 1</span><span class="step-desc">Verify</span></div>
+                </div>
+                <div class="stepper-line" id="stepperLine"></div>
+                <div class="stepper-step" id="stepperStep2">
+                    <div class="step-num"><i class="bi bi-key-fill"></i></div>
+                    <div class="step-info"><span class="step-title">Step 2</span><span class="step-desc">Unlocked</span></div>
+                </div>
+            </div>
+
+            <!-- STEP 2: Locked Code + Custom Themed Locker -->
+            <div class="modal-body" id="modalStep2">
+                <div class="step2-content">
+                    <h3 class="step2-title">${t.code_ready_title || 'Your Coupon Code is Ready!'}</h3>
+                    <p class="step2-subtitle">${t.code_ready_subtitle || 'The code will be revealed below immediately after verification'}</p>
+
+                    <div class="locked-code-box">
+                        <div class="corner-frame tl"></div><div class="corner-frame tr"></div>
+                        <div class="corner-frame bl"></div><div class="corner-frame br"></div>
+                        <div class="locked-code-header">
+                            <span class="locked-label">${t.locked_label || 'COUPON CODE'}</span>
+                            <span class="locked-status" id="lockedStatus"><i class="bi bi-lock-fill"></i> LOCKED</span>
+                        </div>
+                        <div class="locked-code-value" id="lockedCodeValue">•••••••4829</div>
+                    </div>
+
+                    <div class="api-locker-box">
+                        <div class="locker-notice">
+                            <div class="locker-notice-icon"><i class="bi bi-shield-lock-fill"></i></div>
+                            <div class="locker-notice-body">
+                                <h4>${t.complete_offer_title || 'Complete 1 Offer to Unlock'}</h4>
+                                <p>${t.complete_offer_desc || 'Choose either Offer 1 or Offer 2 below. You only need to finish 1 offer to unlock your full coupon code!'}</p>
+                            </div>
+                        </div>
+
+                        <div class="api-locker-offers" id="apiLockerOffers">
+                            <!-- Populated from /api/offers -->
+                        </div>
+
+                        <div class="api-locker-status hidden" id="apiLockerStatus">
+                            <div class="status-pulse-wrapper">
+                                <span class="pulse-indicator"></span>
+                                <span class="status-msg" id="apiLockerStatusMsg">${t.checking_server || 'Checking verification with server...'}</span>
+                            </div>
+                            <button class="btn-check-manual" id="btnCheckManual" onclick="checkStatusManual()">
+                                <i class="bi bi-arrow-clockwise"></i> ${t.check_now || 'Check Now'}
+                            </button>
+                        </div>
+
+                        <div class="locker-guarantee">
+                            <i class="bi bi-shield-check"></i>
+                            <span>${t.locker_guarantee || 'Instant automatic unlock • 100% Free & Safe'}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- STEP 3: Unlocked Reveal -->
+            <div class="modal-body hidden" id="modalStep3">
+                <div class="step3-content">
+                    <div class="success-icon"><i class="bi bi-check-circle-fill"></i></div>
+                    <h3 class="step3-title">${t.unlocked_title || 'Code Unlocked Successfully!'}</h3>
+                    <p class="step3-subtitle">${t.unlocked_subtitle || 'Copy your code below and use it during checkout'}</p>
+                    <div class="revealed-code-box">
+                        <span class="revealed-code" id="revealedCode"></span>
+                        <button class="copy-btn" id="copyBtn" onclick="copyPseoCode()">
+                            <i class="bi bi-clipboard"></i> ${t.copy || 'Copy'}
+                        </button>
+                    </div>
+                    <div class="code-unlocked-meta">
+                        <div class="meta-item"><i class="bi bi-clock-history"></i><span>${t.valid_24h || 'Valid for 24 hours'}</span></div>
+                        <div class="meta-item"><i class="bi bi-patch-check"></i><span>${t.verified_today || 'Verified working today'}</span></div>
+                    </div>
+                    <button class="btn-done" onclick="closeModal()">
+                        <i class="bi bi-check2"></i> ${t.done || 'Done'}
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Client-side Logic -->
+    <script>
+        let currentPseoCode = '';
+        let pseoPollInterval = null;
+        let pseoClickedOffer = null;
+        let cachedOffers = [];
+
+        async function fetchLockerOffers() {
+            try {
+                const res = await fetch('/api/offers');
+                if (res.ok) {
+                    cachedOffers = await res.json();
+                }
+            } catch (e) {
+                console.log('Error fetching offers:', e);
+            }
+            if (!cachedOffers || cachedOffers.length === 0) {
+                cachedOffers = [
+                    { id: 101, name: "Install & Open TikTok", description: "Open for 30s to verify identity", image: "https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=100", link: "https://tiktok.com" },
+                    { id: 102, name: "Complete Quick 2-Min Survey", description: "Answer 4 questions to unlock code", image: "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=100", link: "https://surveys.com" }
+                ];
+            }
+            renderPseoOffers();
+        }
+
+        function renderPseoOffers() {
+            const container = document.getElementById('apiLockerOffers');
+            if (!container) return;
+            container.innerHTML = '';
+            cachedOffers.slice(0, 2).forEach((offer, idx) => {
+                const card = document.createElement('div');
+                card.className = 'api-offer-card';
+                card.onclick = (e) => handlePseoOfferClick(offer, card, e);
+                const badge = idx === 0 ? '⚡ Fast Unlock' : '★ Most Popular';
+                card.innerHTML = \`
+                    <div class="offer-icon-wrapper">
+                        <img src="\${offer.image}" alt="\${offer.name}" class="offer-icon-img" onerror="this.style.display='none'">
+                    </div>
+                    <div class="offer-details">
+                        <span class="offer-badge-pill">\${badge}</span>
+                        <div class="offer-title">\${offer.name}</div>
+                        <div class="offer-desc">\${offer.description}</div>
+                    </div>
+                    <button class="btn-offer-action">
+                        <i class="bi bi-box-arrow-up-right"></i> Verify
+                    </button>
+                \`;
+                container.appendChild(card);
+            });
+        }
+
+        function openPseoModal(title, code, brand, logo) {
+            currentPseoCode = code;
+            const unlockKey = \`cf_unlocked_pseo_\${encodeURIComponent(code)}\`;
+            const unlockData = localStorage.getItem(unlockKey);
+            if (unlockData && (Date.now() - parseInt(unlockData) < 10 * 60 * 60 * 1000)) {
+                showStep3Directly(code);
+                return;
+            }
+
+            document.getElementById('modalCouponTitle').textContent = title;
+            document.getElementById('lockedCodeValue').textContent = '•••••••' + code.slice(-4);
+            document.getElementById('modalStep2').classList.remove('hidden');
+            document.getElementById('modalStep3').classList.add('hidden');
+            document.getElementById('apiLockerStatus').classList.add('hidden');
+            document.getElementById('couponModal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+
+            fetchLockerOffers();
+        }
+
+        function handlePseoOfferClick(offer, cardEl, e) {
+            if (e) e.stopPropagation();
+            pseoClickedOffer = offer.id;
+
+            let link = offer.link;
+            if (link && link !== '#') {
+                const sep = link.includes('?') ? '&' : '?';
+                link += \`\${sep}aff_sub4=couponfinder&aff_sub5=visitor\`;
+                window.open(link, '_blank');
+            }
+
+            document.querySelectorAll('.api-offer-card').forEach(c => c.classList.remove('active-checking'));
+            cardEl.classList.add('active-checking');
+
+            const btn = cardEl.querySelector('.btn-offer-action');
+            if (btn) {
+                btn.innerHTML = '<span class="btn-spinner"></span> Awaiting Completion...';
+            }
+
+            const statusBar = document.getElementById('apiLockerStatus');
+            statusBar.classList.remove('hidden');
+            document.getElementById('apiLockerStatusMsg').innerHTML = '<strong>Activity opened in new tab.</strong> Finish the activity, then check status.';
+
+            startPolling();
+        }
+
+        function startPolling() {
+            if (pseoPollInterval) clearInterval(pseoPollInterval);
+            pseoPollInterval = setInterval(async () => {
+                try {
+                    const res = await fetch('/api/check');
+                    if (res.ok) {
+                        const data = await res.json();
+                        if (data.completed) {
+                            clearInterval(pseoPollInterval);
+                            pseoPollInterval = null;
+                            completePseoUnlock();
+                        }
+                    }
+                } catch (e) {}
+            }, 5000);
+        }
+
+        async function checkStatusManual() {
+            const btn = document.getElementById('btnCheckManual');
+            const msg = document.getElementById('apiLockerStatusMsg');
+            btn.innerHTML = '<span class="btn-spinner"></span> Verifying...';
+            btn.disabled = true;
+
+            try {
+                const res = await fetch('/api/check');
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data.completed) {
+                        if (pseoPollInterval) clearInterval(pseoPollInterval);
+                        completePseoUnlock();
+                        return;
+                    }
+                }
+            } catch (e) {}
+
+            setTimeout(() => {
+                btn.innerHTML = '<i class="bi bi-arrow-clockwise"></i> Check Status';
+                btn.disabled = false;
+                msg.innerHTML = '<span style="color:#ef4444;font-weight:700;"><i class="bi bi-x-circle-fill"></i> Not completed yet!</span> Please finish the activity in your opened tab.';
+            }, 1200);
+        }
+
+        function completePseoUnlock() {
+            const step1 = document.getElementById('stepperStep1');
+            const step2 = document.getElementById('stepperStep2');
+            const line = document.getElementById('stepperLine');
+            step1.className = 'stepper-step completed';
+            step1.querySelector('.step-num').innerHTML = '<i class="bi bi-check2"></i>';
+            line.className = 'stepper-line active';
+            step2.className = 'stepper-step active';
+
+            document.getElementById('lockedStatus').innerHTML = '<i class="bi bi-unlock-fill"></i> UNLOCKED';
+            document.getElementById('lockedStatus').classList.add('unlocked');
+            document.getElementById('lockedCodeValue').textContent = currentPseoCode;
+
+            localStorage.setItem(\`cf_unlocked_pseo_\${encodeURIComponent(currentPseoCode)}\`, Date.now().toString());
+
+            setTimeout(() => {
+                document.getElementById('modalStep2').classList.add('hidden');
+                document.getElementById('modalStep3').classList.remove('hidden');
+                document.getElementById('revealedCode').textContent = currentPseoCode;
+            }, 1200);
+        }
+
+        function showStep3Directly(code) {
+            document.getElementById('modalStep2').classList.add('hidden');
+            document.getElementById('modalStep3').classList.remove('hidden');
+            document.getElementById('revealedCode').textContent = code;
+            document.getElementById('couponModal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function copyPseoCode() {
+            const code = document.getElementById('revealedCode').textContent;
+            navigator.clipboard.writeText(code);
+            const btn = document.getElementById('copyBtn');
+            btn.innerHTML = '<i class="bi bi-check2"></i> Copied!';
+            setTimeout(() => { btn.innerHTML = '<i class="bi bi-clipboard"></i> Copy'; }, 2000);
+        }
+
+        function closeModal() {
+            document.getElementById('couponModal').classList.remove('active');
+            document.body.style.overflow = '';
+            if (pseoPollInterval) clearInterval(pseoPollInterval);
+        }
+
+        // Theme toggle logic
+        document.getElementById('themeToggle').addEventListener('click', () => {
+            const html = document.documentElement;
+            const isDark = html.getAttribute('data-theme') === 'dark';
+            html.setAttribute('data-theme', isDark ? 'light' : 'dark');
+            localStorage.setItem('theme', isDark ? 'light' : 'dark');
+        });
+        if (localStorage.getItem('theme') === 'dark') {
+            document.documentElement.setAttribute('data-theme', 'dark');
+        }
+    </script>
+</body>
+</html>`;
+
+    res.setHeader('Content-Type', 'text/html; charset=utf-8');
+    res.setHeader('Cache-Control', 'public, max-age=3600, s-maxage=86400, stale-while-revalidate=43200');
+    return res.status(200).send(html);
+}

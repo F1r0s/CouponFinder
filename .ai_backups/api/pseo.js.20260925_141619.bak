@@ -1,0 +1,3 @@
+{ "src": "/(en|es|fr|pt)/coupons/(.*)", "dest": "/api/pseo.js?lang=$1&slug=$2" },
+    { "src": "/coupons/(.*)", "dest": "/api/pseo.js?lang=en&slug=$1" },
+    { "src": "/secretadmin2026here", "dest": "/secretadmin2026here.html" },

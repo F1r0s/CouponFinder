@@ -1,0 +1,15 @@
+// Match brand and intent from the slug (longest slug first to prevent prefix collision)
+    let matchedBrand = null;
+    let matchedIntent = null;
+
+    const sortedBrands = [...(pseoConfig.brands || [])].sort((a, b) => (b.slug?.length || 0) - (a.slug?.length || 0));
+
+    for (const b of sortedBrands) {
+        if (slug === b.slug || slug.startsWith(b.slug + '-')) {
+            matchedBrand = b;
+            const remaining = slug === b.slug ? '' : slug.slice(b.slug.length + 1);
+            matchedIntent = (pseoConfig.intentModifiers || []).find(i => i.slug === remaining)
+                || (pseoConfig.intentModifiers ? pseoConfig.intentModifiers[0] : { slug: 'promo-codes', en: 'Promo Codes' });
+            break;
+        }
+    }

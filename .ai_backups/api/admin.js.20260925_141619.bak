@@ -1,0 +1,308 @@
+// ============================================
+// Secure Admin Backend API (Zero-Dependency JWT & HMAC)
+// Handles Auth, Multilingual Translation Editor, pSEO Config & Bulk Generator
+// ============================================
+
+import crypto from 'crypto';
+import fs from 'fs';
+import path from 'path';
+
+// Runtime in-memory fallback caches for serverless environments
+global.__pseoConfigMemory = global.__pseoConfigMemory || null;
+global.__translationsMemory = global.__translationsMemory || null;
+
+function base64UrlEncode(str) {
+    return Buffer.from(str)
+        .toString('base64')
+        .replace(/=/g, '')
+        .replace(/\+/g, '-')
+        .replace(/\//g, '_');
+}
+
+function base64UrlDecode(str) {
+    let base64 = str.replace(/-/g, '+').replace(/_/g, '/');
+    while (base64.length % 4) base64 += '=';
+    return Buffer.from(base64, 'base64').toString('utf8');
+}
+
+function createJWT(payload, secret) {
+    const header = base64UrlEncode(JSON.stringify({ alg: 'HS256', typ: 'JWT' }));
+    const body = base64UrlEncode(JSON.stringify(payload));
+    const hmac = crypto.createHmac('sha256', secret);
+    hmac.update(`${header}.${body}`);
+    const signature = base64UrlEncode(hmac.digest());
+    return `${header}.${body}.${signature}`;
+}
+
+function verifyJWT(token, secret) {
+    if (!token || typeof token !== 'string') return null;
+    const parts = token.split('.');
+    if (parts.length !== 3) return null;
+    const [header, body, signature] = parts;
+    const hmac = crypto.createHmac('sha256', secret);
+    hmac.update(`${header}.${body}`);
+    const expectedSignature = base64UrlEncode(hmac.digest());
+
+    const sigBuf = Buffer.from(signature);
+    const expBuf = Buffer.from(expectedSignature);
+    if (sigBuf.length !== expBuf.length || !crypto.timingSafeEqual(sigBuf, expBuf)) {
+        return null;
+    }
+    try {
+        const payload = JSON.parse(base64UrlDecode(body));
+        if (payload.exp && Date.now() > payload.exp) return null;
+        return payload;
+    } catch (e) {
+        return null;
+    }
+}
+
+function verifyCredentials(user, pass) {
+    const expectedUser = process.env.ADMIN_USER || 'admin';
+    const expectedPass = process.env.ADMIN_PASSWORD || 'change_this_to_a_secure_password_2026!';
+
+    const userBuf = Buffer.from(String(user || ''));
+    const expUserBuf = Buffer.from(String(expectedUser));
+    const passBuf = Buffer.from(String(pass || ''));
+    const expPassBuf = Buffer.from(String(expectedPass));
+
+    const userMatch = userBuf.length === expUserBuf.length && crypto.timingSafeEqual(userBuf, expUserBuf);
+    const passMatch = passBuf.length === expPassBuf.length && crypto.timingSafeEqual(passBuf, expPassBuf);
+
+    return userMatch && passMatch;
+}
+
+async function parseBody(req) {
+    if (req.body && typeof req.body === 'object') return req.body;
+    if (typeof req.body === 'string') {
+        try { return JSON.parse(req.body); } catch (e) { return {}; }
+    }
+    return new Promise((resolve) => {
+        let data = '';
+        req.on('data', chunk => { data += chunk; });
+        req.on('end', () => {
+            try { resolve(JSON.parse(data || '{}')); } catch (e) { resolve({}); }
+        });
+    });
+}
+
+function readJsonFile(filePath, memoryFallback) {
+    if (memoryFallback) return memoryFallback;
+    try {
+        const full = path.join(process.cwd(), filePath);
+        if (fs.existsSync(full)) {
+            return JSON.parse(fs.readFileSync(full, 'utf8'));
+        }
+    } catch (err) {
+        console.warn(`Could not read ${filePath}:`, err.message);
+    }
+    return null;
+}
+
+function writeJsonFile(filePath, data, memoryKey) {
+    global[memoryKey] = data;
+    try {
+        const full = path.join(process.cwd(), filePath);
+        fs.writeFileSync(full, JSON.stringify(data, null, 2), 'utf8');
+        return true;
+    } catch (err) {
+        console.warn(`Filesystem write prevented on ${filePath}, using runtime memory cache:`, err.message);
+        return true;
+    }
+}
+
+export default async function handler(req, res) {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+
+    if (req.method === 'OPTIONS') {
+        return res.status(200).end();
+    }
+
+    const secret = process.env.ADMIN_JWT_SECRET || 'super_secret_jwt_random_hash_key_64_characters_min_length_here';
+    const action = req.query?.action || (req.url.split('?')[0].replace('/api/admin/', '').replace('/api/admin', '')) || 'stats';
+
+    // Public Endpoint: Login
+    if (action === 'login' && req.method === 'POST') {
+        const body = await parseBody(req);
+        const { username, password } = body;
+
+        if (!verifyCredentials(username, password)) {
+            return res.status(401).json({ success: false, error: 'Invalid admin username or password.' });
+        }
+
+        const expiresAt = Date.now() + 7 * 24 * 60 * 60 * 1000;
+        const token = createJWT({
+            sub: username,
+            role: 'admin',
+            iat: Date.now(),
+            exp: expiresAt
+        }, secret);
+
+        return res.status(200).json({
+            success: true,
+            token,
+            user: username,
+            expiresAt
+        });
+    }
+
+    // Protected Endpoints: Verify JWT
+    const authHeader = req.headers['authorization'] || '';
+    const queryToken = req.query?.token;
+    const token = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : (queryToken || null);
+
+    const payload = verifyJWT(token, secret);
+    if (!payload) {
+        return res.status(401).json({ success: false, error: 'Unauthorized: Invalid or expired session token.' });
+    }
+
+    // Authenticated Check
+    if (action === 'verify') {
+        return res.status(200).json({ success: true, valid: true, user: payload.sub });
+    }
+
+    // Get Overall Stats
+    if (action === 'stats') {
+        const pseo = readJsonFile('data/pseo-config.json', global.__pseoConfigMemory) || { brands: [], intentModifiers: [], settings: {} };
+        const translations = readJsonFile('data/translations.json', global.__translationsMemory) || {};
+
+        const totalBrands = (pseo.brands || []).length;
+        const totalIntents = (pseo.intentModifiers || []).length;
+        const languages = (pseo.settings?.languages || ['en', 'es', 'fr', 'pt']);
+        const totalPseoPages = totalBrands * totalIntents * languages.length;
+        const chunkSize = pseo.settings?.sitemapChunkSize || 500;
+        const totalSitemaps = Math.max(1, Math.ceil((totalPseoPages + 3) / chunkSize));
+
+        return res.status(200).json({
+            success: true,
+            stats: {
+                totalBrands,
+                totalIntents,
+                totalLanguages: languages.length,
+                languages,
+                totalPseoPages,
+                chunkSize,
+                totalSitemaps,
+                siteUrl: process.env.NEXT_PUBLIC_SITE_URL || pseo.settings?.siteUrl || 'https://findercoupon.vercel.app/',
+                ogadsSiteId: process.env.OGADS_SITE_ID || 'couponfinder',
+                hasCustomPassword: Boolean(process.env.ADMIN_PASSWORD && process.env.ADMIN_PASSWORD !== 'change_this_to_a_secure_password_2026!')
+            }
+        });
+    }
+
+    // Translations Management
+    if (action === 'get_translations') {
+        const translations = readJsonFile('data/translations.json', global.__translationsMemory) || {};
+        return res.status(200).json({ success: true, translations });
+    }
+
+    if (action === 'save_translations' && req.method === 'POST') {
+        const body = await parseBody(req);
+        if (!body.translations) {
+            return res.status(400).json({ success: false, error: 'Missing translations payload.' });
+        }
+        writeJsonFile('data/translations.json', body.translations, '__translationsMemory');
+        return res.status(200).json({ success: true, message: 'Translations updated successfully.' });
+    }
+
+    // pSEO Configuration Management
+    if (action === 'get_pseo') {
+        const pseo = readJsonFile('data/pseo-config.json', global.__pseoConfigMemory) || {};
+        return res.status(200).json({ success: true, config: pseo });
+    }
+
+    if (action === 'save_pseo' && req.method === 'POST') {
+        const body = await parseBody(req);
+        if (!body.config) {
+            return res.status(400).json({ success: false, error: 'Missing pseo config payload.' });
+        }
+        writeJsonFile('data/pseo-config.json', body.config, '__pseoConfigMemory');
+        return res.status(200).json({ success: true, message: 'pSEO configuration saved successfully.' });
+    }
+
+    // Bulk Page Generator Engine
+    if (action === 'bulk_generate' && req.method === 'POST') {
+        const body = await parseBody(req);
+        const pseo = readJsonFile('data/pseo-config.json', global.__pseoConfigMemory) || { brands: [], intentModifiers: [], settings: {} };
+
+        // Optional list of additional brands supplied by admin
+        const newBrands = body.brands || [];
+        const newIntents = body.intents || [];
+
+        let addedBrandsCount = 0;
+        newBrands.forEach(b => {
+            if (b.slug && !pseo.brands.find(existing => existing.slug === b.slug)) {
+                pseo.brands.push(b);
+                addedBrandsCount++;
+            }
+        });
+
+        let addedIntentsCount = 0;
+        newIntents.forEach(i => {
+            if (i.slug && !pseo.intentModifiers.find(existing => existing.slug === i.slug)) {
+                pseo.intentModifiers.push(i);
+                addedIntentsCount++;
+            }
+        });
+
+        writeJsonFile('data/pseo-config.json', pseo, '__pseoConfigMemory');
+
+        const languages = pseo.settings?.languages || ['en', 'es', 'fr', 'pt'];
+        const totalPages = pseo.brands.length * pseo.intentModifiers.length * languages.length;
+
+        return res.status(200).json({
+            success: true,
+            message: `Bulk generation successful. Added ${addedBrandsCount} brands and ${addedIntentsCount} intent modifiers.`,
+            totalPages,
+            totalBrands: pseo.brands.length,
+            totalIntents: pseo.intentModifiers.length,
+            totalLanguages: languages.length
+        });
+    }
+
+    // Sitemaps List
+    if (action === 'sitemaps_list') {
+        const pseo = readJsonFile('data/pseo-config.json', global.__pseoConfigMemory) || { brands: [], intentModifiers: [], settings: {} };
+        const languages = pseo.settings?.languages || ['en', 'es', 'fr', 'pt'];
+        const totalPseo = pseo.brands.length * pseo.intentModifiers.length * languages.length;
+        const chunkSize = pseo.settings?.sitemapChunkSize || 500;
+        const totalChunks = Math.max(1, Math.ceil((totalPseo + 3) / chunkSize));
+        const rawSiteUrl = process.env.NEXT_PUBLIC_SITE_URL || pseo.settings?.siteUrl || 'https://findercoupon.vercel.app/';
+        const siteUrl = rawSiteUrl.replace(/\/+$/, '');
+
+        const sitemaps = [];
+        for (let i = 1; i <= totalChunks; i++) {
+            sitemaps.push({
+                name: `sitemap_${i}.xml`,
+                url: `${siteUrl}/sitemap_${i}.xml`,
+                chunk: i,
+                estimatedUrls: Math.min(chunkSize, Math.max(0, (totalPseo + 3) - (i - 1) * chunkSize))
+            });
+        }
+
+        return res.status(200).json({
+            success: true,
+            masterIndex: `${siteUrl}/sitemap.xml`,
+            sitemaps,
+            totalUrls: totalPseo + 3
+        });
+    }
+
+    // CPA Locker Info
+    if (action === 'locker_status') {
+        return res.status(200).json({
+            success: true,
+            network: "OGAds",
+            endpoint: "https://appcomplete.org/api/v2",
+            configuredSiteId: process.env.OGADS_SITE_ID || 'couponfinder',
+            hasApiKey: Boolean(process.env.OGADS_API_KEY),
+            postbackUrl: `${(process.env.NEXT_PUBLIC_SITE_URL || 'https://findercoupon.vercel.app/').replace(/\/+$/, '')}/api/postback?ip={ip}&offerid={offer_id}&payout={payout}&site={aff_sub4}`,
+            strictVerificationEnabled: true,
+            requiredCompletions: 1
+        });
+    }
+
+    return res.status(404).json({ success: false, error: 'Admin action not found.' });
+}

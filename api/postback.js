@@ -10,9 +10,9 @@ export default async function handler(req, res) {
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST');
 
-    const userIP = req.query?.ip 
+    const userIP = req.query?.ip
         || req.query?.aff_sub5
-        || req.body?.ip 
+        || req.body?.ip
         || req.headers['x-forwarded-for']?.split(',')[0]?.trim()
         || '127.0.0.1';
 
@@ -42,8 +42,8 @@ export default async function handler(req, res) {
         }
     }
 
-    return res.status(200).json({ 
-        success: true, 
+    return res.status(200).json({
+        success: true,
         message: "Conversion postback acknowledged",
         site: siteId,
         ip: userIP

@@ -1,0 +1,548 @@
+{
+  "settings": {
+    "siteName": "CouponFinder",
+    "siteUrl": "https://findercoupon.vercel.app/",
+    "sitemapChunkSize": 500,
+    "languages": [
+      "en",
+      "es",
+      "fr",
+      "pt"
+    ]
+  },
+  "intentModifiers": [
+    {
+      "slug": "promo-codes",
+      "en": "Promo Codes",
+      "es": "Códigos Promocionales",
+      "fr": "Codes Promo",
+      "pt": "Códigos Promocionais"
+    },
+    {
+      "slug": "discount-code",
+      "en": "Discount Codes",
+      "es": "Códigos de Descuento",
+      "fr": "Bons de Réduction",
+      "pt": "Cupons de Desconto"
+    },
+    {
+      "slug": "coupons",
+      "en": "Coupons & Deals",
+      "es": "Cupones y Ofertas",
+      "fr": "Coupons et Offres",
+      "pt": "Cupons e Ofertas"
+    },
+    {
+      "slug": "free-shipping",
+      "en": "Free Shipping Codes",
+      "es": "Códigos de Envío Gratis",
+      "fr": "Codes Livraison Gratuite",
+      "pt": "Frete Grátis"
+    },
+    {
+      "slug": "student-discount",
+      "en": "Student Discounts",
+      "es": "Descuento para Estudiantes",
+      "fr": "Réductions Étudiantes",
+      "pt": "Desconto de Estudante"
+    },
+    {
+      "slug": "voucher-code",
+      "en": "Voucher Codes",
+      "es": "Vales de Descuento",
+      "fr": "Codes Avantages",
+      "pt": "Vales Promocionais"
+    },
+    {
+      "slug": "exclusive-deals",
+      "en": "Exclusive Deals",
+      "es": "Ofertas Exclusivas",
+      "fr": "Offres Exclusives",
+      "pt": "Ofertas Exclusivas"
+    },
+    {
+      "slug": "first-order-discount",
+      "en": "First Order Discounts",
+      "es": "Descuento Primer Pedido",
+      "fr": "Réduction Première Commande",
+      "pt": "Desconto Primeira Compra"
+    },
+    {
+      "slug": "cyber-deals",
+      "en": "Cyber & Flash Deals",
+      "es": "Ofertas Flash y Cyber",
+      "fr": "Ventes Flash et Cyber",
+      "pt": "Ofertas Relâmpago"
+    },
+    {
+      "slug": "holiday-sales",
+      "en": "Holiday Sale Codes",
+      "es": "Códigos de Temporada",
+      "fr": "Promotions Saisonnières",
+      "pt": "Promoções de Temporada"
+    },
+    {
+      "slug": "referral-code",
+      "en": "Referral Rewards",
+      "es": "Códigos de Invitación",
+      "fr": "Codes de Parrainage",
+      "pt": "Códigos de Indicação"
+    },
+    {
+      "slug": "vip-pass",
+      "en": "VIP Member Savings",
+      "es": "Ahorros para Miembros VIP",
+      "fr": "Avantages Membres VIP",
+      "pt": "Descontos Membro VIP"
+    }
+  ],
+  "brands": [
+    {
+      "slug": "shein",
+      "name": "SHEIN",
+      "category": "fashion",
+      "bestDiscount": "25% OFF",
+      "logo": "https://logo.clearbit.com/shein.com",
+      "domain": "shein.com",
+      "avgSavings": "$18"
+    },
+    {
+      "slug": "nike",
+      "name": "Nike",
+      "category": "fashion",
+      "bestDiscount": "30% OFF",
+      "logo": "https://logo.clearbit.com/nike.com",
+      "domain": "nike.com",
+      "avgSavings": "$25"
+    },
+    {
+      "slug": "adidas",
+      "name": "Adidas",
+      "category": "fashion",
+      "bestDiscount": "35% OFF",
+      "logo": "https://logo.clearbit.com/adidas.com",
+      "domain": "adidas.com",
+      "avgSavings": "$30"
+    },
+    {
+      "slug": "hm",
+      "name": "H&M",
+      "category": "fashion",
+      "bestDiscount": "15% OFF",
+      "logo": "https://logo.clearbit.com/hm.com",
+      "domain": "hm.com",
+      "avgSavings": "$16"
+    },
+    {
+      "slug": "zara",
+      "name": "Zara",
+      "category": "fashion",
+      "bestDiscount": "10% OFF",
+      "logo": "https://logo.clearbit.com/zara.com",
+      "domain": "zara.com",
+      "avgSavings": "$14"
+    },
+    {
+      "slug": "asos",
+      "name": "ASOS",
+      "category": "fashion",
+      "bestDiscount": "20% OFF",
+      "logo": "https://logo.clearbit.com/asos.com",
+      "domain": "asos.com",
+      "avgSavings": "$19"
+    },
+    {
+      "slug": "gymshark",
+      "name": "Gymshark",
+      "category": "fashion",
+      "bestDiscount": "20% OFF",
+      "logo": "https://logo.clearbit.com/gymshark.com",
+      "domain": "gymshark.com",
+      "avgSavings": "$21"
+    },
+    {
+      "slug": "lululemon",
+      "name": "Lululemon",
+      "category": "fashion",
+      "bestDiscount": "20% OFF",
+      "logo": "https://logo.clearbit.com/lululemon.com",
+      "domain": "lululemon.com",
+      "avgSavings": "$28"
+    },
+    {
+      "slug": "puma",
+      "name": "Puma",
+      "category": "fashion",
+      "bestDiscount": "25% OFF",
+      "logo": "https://logo.clearbit.com/puma.com",
+      "domain": "puma.com",
+      "avgSavings": "$22"
+    },
+    {
+      "slug": "under-armour",
+      "name": "Under Armour",
+      "category": "fashion",
+      "bestDiscount": "20% OFF",
+      "logo": "https://logo.clearbit.com/underarmour.com",
+      "domain": "underarmour.com",
+      "avgSavings": "$20"
+    },
+    {
+      "slug": "mcdonalds",
+      "name": "McDonald's",
+      "category": "food",
+      "bestDiscount": "BOGO FREE",
+      "logo": "https://logo.clearbit.com/mcdonalds.com",
+      "domain": "mcdonalds.com",
+      "avgSavings": "$8"
+    },
+    {
+      "slug": "burger-king",
+      "name": "Burger King",
+      "category": "food",
+      "bestDiscount": "FREE WHOPPER",
+      "logo": "https://logo.clearbit.com/burgerking.com",
+      "domain": "burgerking.com",
+      "avgSavings": "$6"
+    },
+    {
+      "slug": "starbucks",
+      "name": "Starbucks",
+      "category": "food",
+      "bestDiscount": "BOGO DRINKS",
+      "logo": "https://logo.clearbit.com/starbucks.com",
+      "domain": "starbucks.com",
+      "avgSavings": "$7"
+    },
+    {
+      "slug": "dominos",
+      "name": "Domino's",
+      "category": "food",
+      "bestDiscount": "50% OFF",
+      "logo": "https://logo.clearbit.com/dominos.com",
+      "domain": "dominos.com",
+      "avgSavings": "$12"
+    },
+    {
+      "slug": "kfc",
+      "name": "KFC",
+      "category": "food",
+      "bestDiscount": "$5 OFF",
+      "logo": "https://logo.clearbit.com/kfc.com",
+      "domain": "kfc.com",
+      "avgSavings": "$5"
+    },
+    {
+      "slug": "pizza-hut",
+      "name": "Pizza Hut",
+      "category": "food",
+      "bestDiscount": "30% OFF",
+      "logo": "https://logo.clearbit.com/pizzahut.com",
+      "domain": "pizzahut.com",
+      "avgSavings": "$11"
+    },
+    {
+      "slug": "subway",
+      "name": "Subway",
+      "category": "food",
+      "bestDiscount": "BOGO FOOTLONG",
+      "logo": "https://logo.clearbit.com/subway.com",
+      "domain": "subway.com",
+      "avgSavings": "$9"
+    },
+    {
+      "slug": "doordash",
+      "name": "DoorDash",
+      "category": "food",
+      "bestDiscount": "$15 OFF",
+      "logo": "https://logo.clearbit.com/doordash.com",
+      "domain": "doordash.com",
+      "avgSavings": "$15"
+    },
+    {
+      "slug": "uber-eats",
+      "name": "Uber Eats",
+      "category": "food",
+      "bestDiscount": "$10 OFF",
+      "logo": "https://logo.clearbit.com/ubereats.com",
+      "domain": "ubereats.com",
+      "avgSavings": "$10"
+    },
+    {
+      "slug": "grubhub",
+      "name": "Grubhub",
+      "category": "food",
+      "bestDiscount": "25% OFF",
+      "logo": "https://logo.clearbit.com/grubhub.com",
+      "domain": "grubhub.com",
+      "avgSavings": "$12"
+    },
+    {
+      "slug": "tesla",
+      "name": "Tesla",
+      "category": "tech",
+      "bestDiscount": "$500 OFF",
+      "logo": "https://logo.clearbit.com/tesla.com",
+      "domain": "tesla.com",
+      "avgSavings": "$500"
+    },
+    {
+      "slug": "apple",
+      "name": "Apple",
+      "category": "tech",
+      "bestDiscount": "$25 GIFT CARD",
+      "logo": "https://logo.clearbit.com/apple.com",
+      "domain": "apple.com",
+      "avgSavings": "$25"
+    },
+    {
+      "slug": "samsung",
+      "name": "Samsung",
+      "category": "tech",
+      "bestDiscount": "20% OFF",
+      "logo": "https://logo.clearbit.com/samsung.com",
+      "domain": "samsung.com",
+      "avgSavings": "$45"
+    },
+    {
+      "slug": "bestbuy",
+      "name": "Best Buy",
+      "category": "tech",
+      "bestDiscount": "$50 OFF",
+      "logo": "https://logo.clearbit.com/bestbuy.com",
+      "domain": "bestbuy.com",
+      "avgSavings": "$45"
+    },
+    {
+      "slug": "playstation",
+      "name": "PlayStation",
+      "category": "tech",
+      "bestDiscount": "25% OFF",
+      "logo": "https://logo.clearbit.com/playstation.com",
+      "domain": "playstation.com",
+      "avgSavings": "$20"
+    },
+    {
+      "slug": "xbox",
+      "name": "Xbox",
+      "category": "tech",
+      "bestDiscount": "$20 OFF",
+      "logo": "https://logo.clearbit.com/xbox.com",
+      "domain": "xbox.com",
+      "avgSavings": "$20"
+    },
+    {
+      "slug": "dell",
+      "name": "Dell",
+      "category": "tech",
+      "bestDiscount": "15% OFF",
+      "logo": "https://logo.clearbit.com/dell.com",
+      "domain": "dell.com",
+      "avgSavings": "$60"
+    },
+    {
+      "slug": "lenovo",
+      "name": "Lenovo",
+      "category": "tech",
+      "bestDiscount": "20% OFF",
+      "logo": "https://logo.clearbit.com/lenovo.com",
+      "domain": "lenovo.com",
+      "avgSavings": "$55"
+    },
+    {
+      "slug": "hp",
+      "name": "HP",
+      "category": "tech",
+      "bestDiscount": "$30 OFF",
+      "logo": "https://logo.clearbit.com/hp.com",
+      "domain": "hp.com",
+      "avgSavings": "$40"
+    },
+    {
+      "slug": "amazon",
+      "name": "Amazon",
+      "category": "shopping",
+      "bestDiscount": "$10 OFF",
+      "logo": "https://logo.clearbit.com/amazon.com",
+      "domain": "amazon.com",
+      "avgSavings": "$15"
+    },
+    {
+      "slug": "ebay",
+      "name": "eBay",
+      "category": "shopping",
+      "bestDiscount": "20% OFF",
+      "logo": "https://logo.clearbit.com/ebay.com",
+      "domain": "ebay.com",
+      "avgSavings": "$14"
+    },
+    {
+      "slug": "walmart",
+      "name": "Walmart",
+      "category": "shopping",
+      "bestDiscount": "$15 OFF",
+      "logo": "https://logo.clearbit.com/walmart.com",
+      "domain": "walmart.com",
+      "avgSavings": "$15"
+    },
+    {
+      "slug": "target",
+      "name": "Target",
+      "category": "shopping",
+      "bestDiscount": "$15 OFF",
+      "logo": "https://logo.clearbit.com/target.com",
+      "domain": "target.com",
+      "avgSavings": "$18"
+    },
+    {
+      "slug": "sephora",
+      "name": "Sephora",
+      "category": "shopping",
+      "bestDiscount": "20% OFF",
+      "logo": "https://logo.clearbit.com/sephora.com",
+      "domain": "sephora.com",
+      "avgSavings": "$22"
+    },
+    {
+      "slug": "ulta",
+      "name": "Ulta Beauty",
+      "category": "shopping",
+      "bestDiscount": "20% OFF",
+      "logo": "https://logo.clearbit.com/ulta.com",
+      "domain": "ulta.com",
+      "avgSavings": "$17"
+    },
+    {
+      "slug": "aliexpress",
+      "name": "AliExpress",
+      "category": "shopping",
+      "bestDiscount": "$8 OFF",
+      "logo": "https://logo.clearbit.com/aliexpress.com",
+      "domain": "aliexpress.com",
+      "avgSavings": "$12"
+    },
+    {
+      "slug": "ikea",
+      "name": "IKEA",
+      "category": "shopping",
+      "bestDiscount": "$25 OFF",
+      "logo": "https://logo.clearbit.com/ikea.com",
+      "domain": "ikea.com",
+      "avgSavings": "$25"
+    },
+    {
+      "slug": "wayfair",
+      "name": "Wayfair",
+      "category": "shopping",
+      "bestDiscount": "15% OFF",
+      "logo": "https://logo.clearbit.com/wayfair.com",
+      "domain": "wayfair.com",
+      "avgSavings": "$35"
+    },
+    {
+      "slug": "uber",
+      "name": "Uber",
+      "category": "travel",
+      "bestDiscount": "50% OFF",
+      "logo": "https://logo.clearbit.com/uber.com",
+      "domain": "uber.com",
+      "avgSavings": "$10"
+    },
+    {
+      "slug": "lyft",
+      "name": "Lyft",
+      "category": "travel",
+      "bestDiscount": "$15 OFF",
+      "logo": "https://logo.clearbit.com/lyft.com",
+      "domain": "lyft.com",
+      "avgSavings": "$12"
+    },
+    {
+      "slug": "airbnb",
+      "name": "Airbnb",
+      "category": "travel",
+      "bestDiscount": "$40 OFF",
+      "logo": "https://logo.clearbit.com/airbnb.com",
+      "domain": "airbnb.com",
+      "avgSavings": "$40"
+    },
+    {
+      "slug": "booking",
+      "name": "Booking.com",
+      "category": "travel",
+      "bestDiscount": "15% OFF",
+      "logo": "https://logo.clearbit.com/booking.com",
+      "domain": "booking.com",
+      "avgSavings": "$35"
+    },
+    {
+      "slug": "expedia",
+      "name": "Expedia",
+      "category": "travel",
+      "bestDiscount": "$50 OFF",
+      "logo": "https://logo.clearbit.com/expedia.com",
+      "domain": "expedia.com",
+      "avgSavings": "$50"
+    },
+    {
+      "slug": "hotels-com",
+      "name": "Hotels.com",
+      "category": "travel",
+      "bestDiscount": "10% OFF",
+      "logo": "https://logo.clearbit.com/hotels.com",
+      "domain": "hotels.com",
+      "avgSavings": "$28"
+    },
+    {
+      "slug": "agoda",
+      "name": "Agoda",
+      "category": "travel",
+      "bestDiscount": "12% OFF",
+      "logo": "https://logo.clearbit.com/agoda.com",
+      "domain": "agoda.com",
+      "avgSavings": "$26"
+    }
+  ],
+  "templates": {
+    "en": {
+      "title": "{brand} {intent} & Verified Discount Codes - Save {bestDiscount} | CouponFinder",
+      "metaDesc": "Get active {brand} {intent} and tested voucher codes today. Save up to {bestDiscount} on your order with guaranteed working discount codes.",
+      "heroHeading": "{brand} {intent} & Vouchers",
+      "heroSub": "Verified and tested daily. Shoppers save an average of {avgSavings} on {brand} orders with these codes.",
+      "faq1_q": "How do I claim and use my {brand} coupon code?",
+      "faq1_a": "Choose an available voucher, complete the quick 1-step verification to unmask the code, copy it to your clipboard, and paste it into the promo box at {domain} checkout.",
+      "faq2_q": "Are these {brand} codes verified and working?",
+      "faq2_a": "Yes! All {brand} coupons and promo codes are tested in real time to ensure they work reliably today."
+    },
+    "es": {
+      "title": "{brand} {intent} y Cupones Verificados - Ahorra {bestDiscount} | CouponFinder",
+      "metaDesc": "Consigue {brand} {intent} activos y códigos de descuento probados hoy. Ahorra hasta {bestDiscount} en tu pedido con códigos garantizados.",
+      "heroHeading": "{brand} {intent} y Ofertas",
+      "heroSub": "Verificado y probado diariamente. Los compradores ahorran un promedio de {avgSavings} en pedidos de {brand}.",
+      "faq1_q": "¿Cómo reclamo y aplico mi código de cupón de {brand}?",
+      "faq1_a": "Selecciona un cupón, completa la verificación rápida de 1 paso para ver el código completo, cópialo y pégalo en la casilla de promoción en {domain}.",
+      "faq2_q": "¿Están verificados y activos estos cupones de {brand}?",
+      "faq2_a": "¡Sí! Todos los cupones y códigos de descuento para {brand} son comprobados diariamente para garantizar su funcionamiento."
+    },
+    "fr": {
+      "title": "{brand} {intent} et Bons de Réduction - Économisez {bestDiscount} | CouponFinder",
+      "metaDesc": "Obtenez des {brand} {intent} actifs et vérifiés aujourd'hui. Économisez jusqu'à {bestDiscount} sur votre commande avec nos codes testés.",
+      "heroHeading": "{brand} {intent} et Codes Promo",
+      "heroSub": "Vérifiés quotidiennement. Les utilisateurs économisent en moyenne {avgSavings} sur leurs commandes {brand}.",
+      "faq1_q": "Comment utiliser mon code promo {brand} ?",
+      "faq1_a": "Choisissez une offre, effectuez la vérification en 1 étape pour afficher le code complet, copiez-le et collez-le sur {domain} lors du paiement.",
+      "faq2_q": "Ces codes promo {brand} sont-ils fonctionnels ?",
+      "faq2_a": "Oui, tous les codes de réduction pour {brand} sont vérifiés régulièrement pour garantir leur validité."
+    },
+    "pt": {
+      "title": "{brand} {intent} e Cupons Verificados - Economize {bestDiscount} | CouponFinder",
+      "metaDesc": "Acesse os melhores {brand} {intent} e cupons de desconto ativos hoje. Economize até {bestDiscount} em suas compras online.",
+      "heroHeading": "{brand} {intent} e Descontos",
+      "heroSub": "Verificados todos os dias. Economia média de {avgSavings} em compras na {brand}.",
+      "faq1_q": "Como resgatar e aplicar o cupom de desconto da {brand}?",
+      "faq1_a": "Escolha a oferta desejada, complete a verificação rápida de 1 etapa para revelar o código, copie e aplique no checkout em {domain}.",
+      "faq2_q": "Esses cupons da {brand} estão realmente funcionando?",
+      "faq2_a": "Sim! Todos os cupons e promoções da {brand} são testados com frequência para garantir desconto imediato."
+    }
+  }
+}

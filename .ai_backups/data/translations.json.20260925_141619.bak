@@ -1,0 +1,4 @@
+async function loadTranslations() {
+    try {
+        const res = await fetch('/data/translations.json');
+        if (res.ok) {

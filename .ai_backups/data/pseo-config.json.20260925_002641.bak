@@ -1,0 +1,37 @@
+{
+  "settings": {
+    "siteName": "CouponFinder",
+    "siteUrl": "https://findercoupon.vercel.app/",
+    "sitemapChunkSize": 600,
+    "languages": ["en", "es", "fr", "pt"]
+  },
+  "intentModifiers": [
+    { "slug": "promo-codes", "en": "Promo Codes", "es": "Códigos Promocionales", "fr": "Codes Promo", "pt": "Códigos Promocionais" },
+    { "slug": "discount-code", "en": "Discount Codes", "es": "Códigos de Descuento", "fr": "Bons de Réduction", "pt": "Cupons de Desconto" },
+    { "slug": "coupons", "en": "Coupons & Deals", "es": "Cupones y Ofertas", "fr": "Coupons et Offres", "pt": "Cupons e Ofertas" },
+    { "slug": "free-shipping", "en": "Free Shipping Codes", "es": "Códigos de Envío Gratis", "fr": "Codes Livraison Gratuite", "pt": "Frete Grátis" },
+    { "slug": "student-discount", "en": "Student Discounts", "es": "Descuento para Estudiantes", "fr": "Réductions Étudiantes", "pt": "Desconto de Estudante" },
+    { "slug": "voucher-code", "en": "Voucher Codes", "es": "Vales de Descuento", "fr": "Codes Avantages", "pt": "Vales Promocionais" },
+    { "slug": "exclusive-deals", "en": "Exclusive Deals", "es": "Ofertas Exclusivas", "fr": "Offres Exclusives", "pt": "Ofertas Exclusivas" }
+  ],
+  "brands": [
+    { "slug": "shein", "name": "SHEIN", "category": "fashion", "bestDiscount": "25% OFF", "logo": "https://logo.clearbit.com/shein.com", "domain": "shein.com", "avgSavings": "$18" },
+    { "slug": "nike", "name": "Nike", "category": "fashion", "bestDiscount": "30% OFF", "logo": "https://logo.clearbit.com/nike.com", "domain": "nike.com", "avgSavings": "$25" },
+    { "slug": "mcdonalds", "name": "McDonald's", "category": "food", "bestDiscount": "BOGO FREE", "logo": "https://logo.clearbit.com/mcdonalds.com", "domain": "mcdonalds.com", "avgSavings": "$8" },
+    { "slug": "burger-king", "name": "Burger King", "category": "food", "bestDiscount": "FREE WHOPPER", "logo": "https://logo.clearbit.com/burgerking.com", "domain": "burgerking.com", "avgSavings": "$6" },
+    { "slug": "adidas", "name": "Adidas", "category": "fashion", "bestDiscount": "35% OFF", "logo": "https://logo.clearbit.com/adidas.com", "domain": "adidas.com", "avgSavings": "$30" },
+    { "slug": "starbucks", "name": "Starbucks", "category": "food", "bestDiscount": "BOGO DRINKS", "logo": "https://logo.clearbit.com/starbucks.com", "domain": "starbucks.com", "avgSavings": "$7" },
+    { "slug": "dominos", "name": "Domino's", "category": "food", "bestDiscount": "50% OFF", "logo": "https://logo.clearbit.com/dominos.com", "domain": "dominos.com", "avgSavings": "$12" },
+    { "slug": "kfc", "name": "KFC", "category": "food", "bestDiscount": "$5 OFF", "logo": "https://logo.clearbit.com/kfc.com", "domain": "kfc.com", "avgSavings": "$5" },
+    { "slug": "tesla", "name": "Tesla", "category": "tech", "bestDiscount": "$500 OFF", "logo": "https://logo.clearbit.com/tesla.com", "domain": "tesla.com", "avgSavings": "$500" },
+    { "slug": "apple", "name": "Apple", "category": "tech", "bestDiscount": "$25 GIFT CARD", "logo": "https://logo.clearbit.com/apple.com", "domain": "apple.com", "avgSavings": "$25" },
+    { "slug": "samsung", "name": "Samsung", "category": "tech", "bestDiscount": "20% OFF", "logo": "https://logo.clearbit.com/samsung.com", "domain": "samsung.com", "avgSavings": "$45" },
+    { "slug": "amazon", "name": "Amazon", "category": "shopping", "bestDiscount": "$10 OFF", "logo": "https://logo.clearbit.com/amazon.com", "domain": "amazon.com", "avgSavings": "$15" },
+    { "slug": "ebay", "name": "eBay", "category": "shopping", "bestDiscount": "20% OFF", "logo": "https://logo.clearbit.com/ebay.com", "domain": "ebay.com", "avgSavings": "$14" },
+    { "slug": "walmart", "name": "Walmart", "category": "shopping", "bestDiscount": "$15 OFF", "logo": "https://logo.clearbit.com/walmart.com", "domain": "walmart.com", "avgSavings": "$15" },
+    { "slug": "uber", "name": "Uber", "category": "travel", "bestDiscount": "50% OFF", "logo": "https://logo.clearbit.com/uber.com", "domain": "uber.com", "avgSavings": "$10" },
+    { "slug": "uber-eats", "name": "Uber Eats", "category": "food", "bestDiscount": "$10 OFF", "logo": "https://logo.clearbit.com/ubereats.com", "domain": "ubereats.com", "avgSavings": "$10" },
+    { "slug": "airbnb", "name": "Airbnb", "category": "travel", "bestDiscount": "$40 OFF", "logo": "https://logo.clearbit.com/airbnb.com", "domain": "airbnb.com", "avgSavings": "$40" },
+    { "slug": "booking", "name": "Booking.com", "category": "travel", "bestDiscount": "15% OFF", "logo": "https://logo.clearbit.com/booking.com", "domain": "booking.com", "avgSavings": "$35" },
+    { "slug": "ikea", "name": "IKEA", "category": "shopping", "bestDiscount": "$25 OFF", "logo": "https://logo.clearbit.com/ikea.com", "domain": "ikea.com", "avgSavings": "$25" },
+    { "slug": "ex

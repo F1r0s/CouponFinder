@@ -1,0 +1,1084 @@
+/* ============================================
+   CouponFinder - Main JavaScript
+   Matching handycoupons.org / turbo.coupons flow
+   ============================================ */
+
+// ============================================
+// COUPON DATA - International Brands with real images
+// ============================================
+const couponsData = [
+    // ===== FASHION =====
+    {
+        id: 1, brand: "SHEIN", title: "20% Off Your First Order",
+        code: "SHEIN20NEW", discount: "20% OFF",
+        incentiveText: "20% Discount", incentiveDesc: "Valid on first purchase only",
+        description: "Get 20% off your entire first order at SHEIN. Shop millions of trendy fashion items including dresses, tops, bottoms, shoes, accessories and more at unbeatable prices. New customers only.",
+        category: "fashion", rating: 4.9, ratingsCount: 4521, badge: "hot",
+        expiry: "No expiration", usesToday: 342, couponsLeft: 187,
+        bannerImg: "https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=600&h=300&fit=crop",
+        brandLogo: "https://logo.clearbit.com/shein.com"
+    },
+    {
+        id: 2, brand: "SHEIN", title: "Free Shipping Over $29",
+        code: "SHEINFS29", discount: "FREE SHIP",
+        incentiveText: "Free Shipping", incentiveDesc: "On orders $29+",
+        description: "Enjoy free standard shipping on all SHEIN orders over $29. No coupon code required at checkout, just meet the minimum spend and shipping is on us!",
+        category: "fashion", rating: 4.8, ratingsCount: 3219, badge: null,
+        expiry: "No expiration", usesToday: 278, couponsLeft: 412,
+        bannerImg: "https://images.unsplash.com/photo-1556905055-8f358a7a47b2?w=600&h=300&fit=crop",
+        brandLogo: "https://logo.clearbit.com/shein.com"
+    },
+    {
+        id: 3, brand: "Nike", title: "25% Off Sale Items",
+        code: "NIKE25SALE", discount: "25% OFF",
+        incentiveText: "25% Discount", incentiveDesc: "On sale items only",
+        description: "Take an extra 25% off already-reduced sale items at Nike. Applies to shoes, apparel, and accessories. Stack with existing markdowns for maximum savings on your favorite Nike gear.",
+        category: "fashion", rating: 4.9, ratingsCount: 6782, badge: "hot",
+        expiry: "No expiration", usesToday: 456, couponsLeft: 134,
+        bannerImg: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=600&h=300&fit=crop",
+        brandLogo: "https://logo.clearbit.com/nike.com"
+    },
+    {
+        id: 4, brand: "Nike", title: "Free Shipping All Orders",
+        code: "NIKESHIP2026", discount: "FREE SHIP",
+        incentiveText: "Free Shipping", incentiveDesc: "No minimum required",
+        description: "Get free standard shipping on every Nike order with no minimum purchase required. Apply this code at checkout and save on delivery for shoes, apparel and accessories.",
+        category: "fashion", rating: 4.8, ratingsCount: 2341, badge: "new",
+        expiry: "No expiration", usesToday: 189, couponsLeft: 521,
+        bannerImg: "https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?w=600&h=300&fit=crop",
+        brandLogo: "https://logo.clearbit.com/nike.com"
+    },
+    {
+        id: 5, brand: "Adidas", title: "30% Off Full Price Items",
+        code: "ADIDAS30OFF", discount: "30% OFF",
+        incentiveText: "30% Discount", incentiveDesc: "Excludes limited editions",
+        description: "Save 30% on full-price Adidas products including Originals, Running, Training and more. Excludes collaboration items and limited editions. Works on shoes, clothing and accessories.",
+        category: "fashion", rating: 4.8, ratingsCount: 5102, badge: "exclusive",
+        expiry: "No expiration", usesToday: 312, couponsLeft: 203,
+        bannerImg: "https://images.unsplash.com/photo-1518002171953-a080ee817e1f?w=600&h=300&fit=crop",
+        brandLogo: "https://logo.clearbit.com/adidas.com"
+    },
+    {
+        id: 6, brand: "H&M", title: "15% Off App Orders",
+        code: "HMAPP15", discount: "15% OFF",
+        incentiveText: "15% Discount", incentiveDesc: "Mobile app exclusive",
+        description: "Download the H&M app and get 15% off your first app order. Discover the latest fashion trends for women, men, and kids at affordable prices delivered straight to your door.",
+        category: "fashion", rating: 4.6, ratingsCount: 1890, badge: null,
+        expiry: "No expiration", usesToday: 234, couponsLeft: 389,
+        bannerImg: "https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=600&h=300&fit=crop",
+        brandLogo: "https://logo.clearbit.com/hm.com"
+    },
+    {
+        id: 7, brand: "Zara", title: "10% Off New Collection",
+        code: "ZARANEW10", discount: "10% OFF",
+        incentiveText: "10% Discount", incentiveDesc: "New arrivals only",
+        description: "Get 10% off the latest Zara collection including new season arrivals. From elegant dresses to casual streetwear, find your perfect look and save on the newest styles.",
+        category: "fashion", rating: 4.7, ratingsCount: 2567, badge: "new",
+        expiry: "No expiration", usesToday: 198, couponsLeft: 156,
+        bannerImg: "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=600&h=300&fit=crop",
+        brandLogo: "https://logo.clearbit.com/zara.com"
+    },
+
+    // ===== FOOD =====
+    {
+        id: 8, brand: "McDonald's", title: "Buy 1 Get 1 Free Big Mac",
+        code: "MCDBOGO2026", discount: "BOGO",
+        incentiveText: "Buy 1 Get 1 Free", incentiveDesc: "Big Mac deal via app",
+        description: "Get a free Big Mac when you buy one through the McDonald's app! The iconic double-decker burger with special sauce, lettuce, cheese, pickles and onions on a sesame seed bun.",
+        category: "food", rating: 4.9, ratingsCount: 8932, badge: "hot",
+        expiry: "No expiration", usesToday: 567, couponsLeft: 98,
+        bannerImg: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=600&h=300&fit=crop",
+        brandLogo: "https://logo.clearbit.com/mcdonalds.com"
+    },
+    {
+        id: 9, brand: "McDonald's", title: "20% Off Mobile Orders",
+        code: "MCDAPP20", discount: "20% OFF",
+        incentiveText: "20% Discount", incentiveDesc: "App orders over $10",
+        description: "Save 20% on your McDonald's mobile order when you spend $10 or more. Order through the app for the best deals on all your favorites including meals, drinks and desserts.",
+        category: "food", rating: 4.7, ratingsCount: 4210, badge: null,
+        expiry: "No expiration", usesToday: 423, couponsLeft: 256,
+        bannerImg: "https://images.unsplash.com/photo-1552895638-f7fe08d2f7d5?w=600&h=300&fit=crop",
+        brandLogo: "https://logo.clearbit.com/mcdonalds.com"
+    },
+    {
+        id: 10, brand: "Burger King", title: "Free Whopper With $5 Purchase",
+        code: "BKWHOPPER", discount: "FREE",
+        incentiveText: "Free Whopper", incentiveDesc: "Min. purchase $5",
+        description: "Get a FREE Whopper when you spend $5 or more at Burger King. The flame-grilled beef patty topped with tomatoes, lettuce, mayo, pickles, and onions on a sesame seed bun.",
+        category: "food", rating: 4.8, ratingsCount: 5678, badge: "hot",
+        expiry: "No expiration", usesToday: 389, couponsLeft: 145,
+        bannerImg: "https://images.unsplash.com/photo-1550547660-d9450f859349?w=600&h=300&fit=crop",
+        brandLogo: "https://logo.clearbit.com/burgerking.com"
+    },
+    {
+        id: 11, brand: "Burger King", title: "$3 Off Family Bundles",
+        code: "BKFAMILY3", discount: "$3 OFF",
+        incentiveText: "$3 Discount", incentiveDesc: "Family meal deals",
+        description: "Save $3 on Burger King family bundle meals. Feed the whole family with our value bundles including Whoppers, chicken sandwiches, fries, and drinks at a great price.",
+        category: "food", rating: 4.6, ratingsCount: 2145, badge: null,
+        expiry: "No expiration", usesToday: 201, couponsLeft: 334,
+        bannerImg: "https://images.unsplash.com/photo-1594212699903-ec8a3eca50f5?w=600&h=300&fit=crop",
+        brandLogo: "https://logo.clearbit.com/burgerking.com"
+    },
+    {
+        id: 12, brand: "Starbucks", title: "Buy 1 Get 1 Free Drinks",
+        code: "SBUXBOGO", discount: "BOGO",
+        incentiveText: "Buy 1 Get 1 Free", incentiveDesc: "Grande or larger",
+        description: "Enjoy a buy-one-get-one-free offer on handcrafted beverages at Starbucks! Choose any Grande or larger drink and get a second one FREE. Includes lattes, frappuccinos, teas and more.",
+        category: "food", rating: 4.9, ratingsCount: 7234, badge: "exclusive",
+        expiry: "No expiration", usesToday: 512, couponsLeft: 89,
+        bannerImg: "https://images.unsplash.com/photo-1504753793650-d4a2b783c15e?w=600&h=300&fit=crop",
+        brandLogo: "https://logo.clearbit.com/starbucks.com"
+    },
+    {
+        id: 13, brand: "Domino's", title: "50% Off All Pizzas",
+        code: "DOMINOS50", discount: "50% OFF",
+        incentiveText: "50% Discount", incentiveDesc: "Online orders only",
+        description: "Get 50% off all menu-priced pizzas when you order online at Domino's. From classic pepperoni to specialty pizzas, enjoy half-price pies delivered to your door or available for carryout.",
+        category: "food", rating: 4.8, ratingsCount: 6543, badge: "hot",
+        expiry: "No expiration", usesToday: 634, couponsLeft: 167,
+        bannerImg: "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=600&h=300&fit=crop",
+        brandLogo: "https://logo.clearbit.com/dominos.com"
+    },
+    {
+        id: 14, brand: "KFC", title: "$5 Off Bucket Meals",
+        code: "KFC5BUCKET", discount: "$5 OFF",
+        incentiveText: "$5 Discount", incentiveDesc: "Bucket meals only",
+        description: "Save $5 on any KFC bucket meal. Our Original Recipe chicken is marinated with a secret blend of 11 herbs and spices, then pressure cooked to perfection. Feed the whole family for less.",
+        category: "food", rating: 4.6, ratingsCount: 3456, badge: "popular",
+        expiry: "No expiration", usesToday: 345, couponsLeft: 231,
+        bannerImg: "https://images.unsplash.com/photo-1626645738196-c2a7c87a8f58?w=600&h=300&fit=crop",
+        brandLogo: "https://logo.clearbit.com/kfc.com"
+    },
+    {
+        id: 15, brand: "Starbucks", title: "150 Bonus Stars On $20+",
+        code: "SBUXSTARS150", discount: "150 STARS",
+        incentiveText: "150 Bonus Stars", incentiveDesc: "Rewards members",
+        description: "Earn 150 bonus Starbucks Stars when you spend $20 or more as a Starbucks Rewards member. Stack with your regular stars for faster rewards and free drinks.",
+        category: "food", rating: 4.7, ratingsCount: 2890, badge: "new",
+        expiry: "No expiration", usesToday: 278, couponsLeft: 423,
+        bannerImg: "https://images.unsplash.com/photo-1461023058943-07fcbe16d735?w=600&h=300&fit=crop",
+        brandLogo: "https://logo.clearbit.com/starbucks.com"
+    },
+
+    // ===== TECH =====
+    {
+        id: 16, brand: "Tesla", title: "$500 Off Referral Credit",
+        code: "TESLA500REF", discount: "$500 OFF",
+        incentiveText: "$500 Credit", incentiveDesc: "New vehicle purchase",
+        description: "Use this Tesla referral code to receive a $500 credit toward your new Tesla vehicle purchase. Applies to Model 3, Model Y, Model S, and Model X. One of the best referral programs available.",
+        category: "tech", rating: 5.0, ratingsCount: 1234, badge: "exclusive",
+        expiry: "No expiration", usesToday: 89, couponsLeft: 45,
+        bannerImg: "https://images.unsplash.com/photo-1560958089-b8a1929cea89?w=600&h=300&fit=crop",
+        brandLogo: "https://logo.clearbit.com/tesla.com"
+    },
+    {
+        id: 17, brand: "Tesla", title: "3 Months Free Premium",
+        code: "TESLAPREM3M", discount: "FREE 3M",
+        incentiveText: "3 Months Free", incentiveDesc: "Premium Connectivity",
+        description: "Get 3 months of Tesla Premium Connectivity for free. Enjoy satellite maps, live traffic, music streaming, video streaming and more in your Tesla with this exclusive promo code.",
+        category: "tech", rating: 4.9, ratingsCount: 987, badge: "new",
+        expiry: "No expiration", usesToday: 156, couponsLeft: 78,
+        bannerImg: "https://images.unsplash.com/photo-1617886903355-9354bb57751f?w=600&h=300&fit=crop",
+        brandLogo: "https://logo.clearbit.com/tesla.com"
+    },
+    {
+        id: 18, brand: "Apple", title: "$25 Gift Card w/ Purchase",
+        code: "APPLE25GC", discount: "$25 FREE",
+        incentiveText: "$25 Gift Card", incentiveDesc: "With select devices",
+        description: "Receive a $25 Apple Gift Card when you purchase select Apple products. Use it toward apps, games, music, movies, iCloud+, and more from the App Store and Apple services.",
+        category: "tech", rating: 4.8, ratingsCount: 4567, badge: "popular",
+        expiry: "No expiration", usesToday: 234, couponsLeft: 167,
+        bannerImg: "https://images.unsplash.com/photo-1491933382434-500287f9b54b?w=600&h=300&fit=crop",
+        brandLogo: "https://logo.clearbit.com/apple.com"
+    },
+    {
+        id: 19, brand: "Samsung", title: "15% Off Galaxy Accessories",
+        code: "GALAXY15ACC", discount: "15% OFF",
+        incentiveText: "15% Discount", incentiveDesc: "Cases, chargers, buds",
+        description: "Save 15% on Samsung Galaxy accessories including phone cases, wireless chargers, Galaxy Buds, smartwatch bands, and more. Upgrade your Galaxy experience for less.",
+        category: "tech", rating: 4.7, ratingsCount: 2345, badge: null,
+        expiry: "No expiration", usesToday: 178, couponsLeft: 298,
+        bannerImg: "https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?w=600&h=300&fit=crop",
+        brandLogo: "https://logo.clearbit.com/samsung.com"
+    },
+
+    // ===== SHOPPING =====
+    {
+        id: 20, brand: "Amazon", title: "$10 Off $50+ Orders",
+        code: "AMZN10OFF50", discount: "$10 OFF",
+        incentiveText: "$10 Discount", incentiveDesc: "First-time app users",
+        description: "Get $10 off when you spend $50 or more on Amazon. This code is available for first-time Amazon app users. Shop millions of products with fast delivery and save even more.",
+        category: "shopping", rating: 4.9, ratingsCount: 9876, badge: "hot",
+        expiry: "No expiration", usesToday: 678, couponsLeft: 112,
+        bannerImg: "https://images.unsplash.com/photo-1523474253046-8cd2748b5fd2?w=600&h=300&fit=crop",
+        brandLogo: "https://logo.clearbit.com/amazon.com"
+    },
+    {
+        id: 21, brand: "Amazon", title: "Free 30-Day Prime Trial",
+        code: "PRIMETRIAL30", discount: "FREE",
+        incentiveText: "Free Prime Trial", incentiveDesc: "30 days free shipping",
+        description: "Start your free 30-day Amazon Prime trial with free two-day shipping, Prime Video streaming, Prime Music, exclusive deals and more. Cancel anytime during the trial period.",
+        category: "shopping", rating: 4.8, ratingsCount: 7654, badge: "exclusive",
+        expiry: "No expiration", usesToday: 432, couponsLeft: 567,
+        bannerImg: "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=600&h=300&fit=crop",
+        brandLogo: "https://logo.clearbit.com/amazon.com"
+    },
+    {
+        id: 22, brand: "eBay", title: "20% Off First Purchase",
+        code: "EBAY20FIRST", discount: "20% OFF",
+        incentiveText: "20% Discount", incentiveDesc: "New accounts only",
+        description: "New to eBay? Save 20% on your first purchase with this exclusive welcome code. Shop electronics, fashion, home goods, collectibles and more from millions of sellers worldwide.",
+        category: "shopping", rating: 4.6, ratingsCount: 3210, badge: "new",
+        expiry: "No expiration", usesToday: 234, couponsLeft: 345,
+        bannerImg: "https://images.unsplash.com/photo-1472851294608-062f824d29cc?w=600&h=300&fit=crop",
+        brandLogo: "https://logo.clearbit.com/ebay.com"
+    },
+    {
+        id: 23, brand: "Walmart", title: "$15 Off Grocery Pickup",
+        code: "WALMARTPICK15", discount: "$15 OFF",
+        incentiveText: "$15 Discount", incentiveDesc: "First grocery pickup",
+        description: "Save $15 on your first Walmart grocery pickup order. Shop fresh groceries, pantry staples, household essentials and more online, then pick up at your local Walmart for free.",
+        category: "shopping", rating: 4.7, ratingsCount: 4567, badge: "popular",
+        expiry: "No expiration", usesToday: 345, couponsLeft: 234,
+        bannerImg: "https://images.unsplash.com/photo-1604719312566-8912e9227c6a?w=600&h=300&fit=crop",
+        brandLogo: "https://logo.clearbit.com/walmart.com"
+    },
+
+    // ===== TRAVEL =====
+    {
+        id: 24, brand: "Uber", title: "50% Off First 3 Rides",
+        code: "UBER50FIRST3", discount: "50% OFF",
+        incentiveText: "50% Discount", incentiveDesc: "First 3 rides, new users",
+        description: "New Uber users save 50% on their first 3 rides! Whether you need a quick commute, airport transfer, or night out - get where you need to go for half the price.",
+        category: "travel", rating: 4.8, ratingsCount: 5678, badge: "hot",
+        expiry: "No expiration", usesToday: 456, couponsLeft: 178,
+        bannerImg: "https://images.unsplash.com/photo-1449965408869-ebd13bc9e38a?w=600&h=300&fit=crop",
+        brandLogo: "https://logo.clearbit.com/uber.com"
+    },
+    {
+        id: 25, brand: "Uber Eats", title: "$10 Off Your First Order",
+        code: "EATS10NEW", discount: "$10 OFF",
+        incentiveText: "$10 Discount", incentiveDesc: "Min. order $20",
+        description: "Get $10 off your first Uber Eats delivery when you spend $20 or more. Discover restaurants near you and enjoy food delivery from your favourite local spots.",
+        category: "travel", rating: 4.7, ratingsCount: 4321, badge: "popular",
+        expiry: "No expiration", usesToday: 389, couponsLeft: 234,
+        bannerImg: "https://images.unsplash.com/photo-1526367790999-0150786686a2?w=600&h=300&fit=crop",
+        brandLogo: "https://logo.clearbit.com/ubereats.com"
+    },
+    {
+        id: 26, brand: "Airbnb", title: "$40 Off First Booking",
+        code: "AIRBNB40NEW", discount: "$40 OFF",
+        incentiveText: "$40 Discount", incentiveDesc: "First stay, $100+ booking",
+        description: "Save $40 on your first Airbnb stay when you book a trip of $100 or more. Discover unique stays around the world - from cozy apartments to luxury villas and everything in between.",
+        category: "travel", rating: 4.9, ratingsCount: 3456, badge: "exclusive",
+        expiry: "No expiration", usesToday: 167, couponsLeft: 89,
+        bannerImg: "https://images.unsplash.com/photo-1501785888041-af3ef285b470?w=600&h=300&fit=crop",
+        brandLogo: "https://logo.clearbit.com/airbnb.com"
+    },
+    {
+        id: 27, brand: "Booking.com", title: "15% Off Genius Deals",
+        code: "BOOKING15GEN", discount: "15% OFF",
+        incentiveText: "15% Discount", incentiveDesc: "Genius member deals",
+        description: "Unlock 15% off Genius-level deals at Booking.com. Access exclusive discounts on hotels, apartments, and vacation rentals worldwide as a Genius loyalty member.",
+        category: "travel", rating: 4.7, ratingsCount: 5678, badge: "new",
+        expiry: "No expiration", usesToday: 234, couponsLeft: 312,
+        bannerImg: "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=600&h=300&fit=crop",
+        brandLogo: "https://logo.clearbit.com/booking.com"
+    },
+    {
+        id: 28, brand: "SHEIN", title: "$15 Off Orders Over $99",
+        code: "SAVE15SHEIN", discount: "$15 OFF",
+        incentiveText: "$15 Discount", incentiveDesc: "Min. spend $99",
+        description: "Save $15 when you spend $99 or more at SHEIN. Stock up on trendy fashion items, accessories, and home decor at the best prices. This code works sitewide on all categories.",
+        category: "fashion", rating: 4.7, ratingsCount: 2890, badge: "popular",
+        expiry: "No expiration", usesToday: 156, couponsLeft: 298,
+        bannerImg: "https://images.unsplash.com/photo-1483985988355-763728e1935b?w=600&h=300&fit=crop",
+        brandLogo: "https://logo.clearbit.com/shein.com"
+    },
+    {
+        id: 29, brand: "IKEA", title: "$25 Off $150+ Orders",
+        code: "IKEA25SAVE", discount: "$25 OFF",
+        incentiveText: "$25 Discount", incentiveDesc: "In-store & online",
+        description: "Save $25 on your next IKEA purchase when you spend $150 or more. Discover affordable furniture, home decor, and smart storage solutions to make your home beautiful.",
+        category: "shopping", rating: 4.7, ratingsCount: 3210, badge: null,
+        expiry: "No expiration", usesToday: 189, couponsLeft: 278,
+        bannerImg: "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=600&h=300&fit=crop",
+        brandLogo: "https://logo.clearbit.com/ikea.com"
+    },
+    {
+        id: 30, brand: "Expedia", title: "$50 Off $300+ Hotel Stay",
+        code: "EXPEDIA50HTL", discount: "$50 OFF",
+        incentiveText: "$50 Discount", incentiveDesc: "Hotels $300+",
+        description: "Save $50 on hotel bookings of $300 or more at Expedia. Choose from thousands of hotels worldwide and enjoy great savings on your next trip or vacation.",
+        category: "travel", rating: 4.6, ratingsCount: 2345, badge: null,
+        expiry: "No expiration", usesToday: 145, couponsLeft: 267,
+        bannerImg: "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=600&h=300&fit=crop",
+        brandLogo: "https://logo.clearbit.com/expedia.com"
+    }
+];
+
+// ============================================
+// STATE
+// ============================================
+let currentFilter = 'all';
+let activeCoupon = null;
+let pollInterval = null;
+let currentLanguage = localStorage.getItem('site_lang') || 'en';
+let translationsData = {};
+
+async function loadTranslations() {
+    try {
+        const res = await fetch('data/translations.json');
+        if (res.ok) {
+            translationsData = await res.json();
+            applyLanguage(currentLanguage);
+        } else {
+            console.warn('Could not load data/translations.json');
+        }
+    } catch (err) {
+        console.error('Failed to load translations:', err);
+    }
+}
+
+function applyLanguage(lang) {
+    currentLanguage = lang;
+    localStorage.setItem('site_lang', lang);
+
+    document.querySelectorAll('.lang-item').forEach(item => {
+        if (item.dataset.lang === lang) {
+            item.classList.add('active');
+        } else {
+            item.classList.remove('active');
+        }
+    });
+
+    const currentCodeEl = document.getElementById('langCurrentCode');
+    if (currentCodeEl) {
+        currentCodeEl.textContent = lang.toUpperCase();
+    }
+
+    if (!translationsData || !translationsData[lang]) return;
+    const dict = translationsData[lang] || translationsData['en'] || {};
+
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (dict[key]) {
+            if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
+                el.placeholder = dict[key];
+            } else {
+                el.textContent = dict[key];
+            }
+        }
+    });
+
+    const searchInput = document.getElementById('searchInput');
+        if (searchInput && dict['search_placeholder']) {
+            searchInput.placeholder = dict['search_placeholder'];
+        }
+    }
+
+    renderCoupons(currentFilter);
+}
+
+// ============================================
+// RENDER CARDS
+// ============================================
+function renderCoupons(filter = 'all') {
+    const grid = document.getElementById('couponsGrid');
+    const filtered = filter === 'all'
+        ? couponsData
+        : couponsData.filter(c => c.category === filter);
+
+    grid.innerHTML = '';
+
+    filtered.forEach((coupon, index) => {
+        const card = buildCard(coupon, index);
+        grid.appendChild(card);
+    });
+}
+
+function buildCard(coupon, index) {
+    const div = document.createElement('div');
+    div.className = 'coupon-card';
+    div.style.animationDelay = `${index * 0.05}s`;
+    div.setAttribute('data-category', coupon.category);
+
+    const maskedCode = formatPartialCode(coupon.code);
+    const dict = (translationsData && translationsData[currentLanguage]) || {};
+    const textCouponsLeft = dict['coupons_left'] || 'coupons left';
+    const textGetCode = dict['get_code'] || 'Get Code';
+    const textUsesToday = dict['uses_today'] || 'uses today';
+
+    div.innerHTML = `
+        <div class="card-banner">
+            <img src="${coupon.bannerImg}" alt="${coupon.title}" loading="lazy">
+            <div class="card-rating">
+                <svg class="star" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="12" height="12">
+                    <path d="M17.286 21.09q-1.69.001-5.288-2.615-3.596 2.617-5.288 2.616-2.726 0-.495-6.8Q-3.174 7.516 8.35 7.516h.076Q10.211 2 11.998 2q1.785 0 3.574 5.516h.076q11.525 0 2.133 6.774 2.23 6.802-.497 6.8"/>
+                </svg>
+                <span>${coupon.rating}</span>
+            </div>
+            <img src="${coupon.brandLogo}" alt="${coupon.brand}" class="card-brand-logo"
+                 onerror="this.style.display='none'">
+        </div>
+        <div class="card-body">
+            <h3 class="card-title">${coupon.title}</h3>
+            <div class="card-brand-name">${coupon.brand}</div>
+            <div class="card-incentive">
+                <span class="incentive-main-text">${coupon.incentiveText}</span>
+                <span class="incentive-sub-text">${coupon.incentiveDesc}</span>
+            </div>
+            <div class="card-coupons-left">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M14 4H10C6.2 4 4.3 4 3.1 5.2C2.3 6 2.1 7.1 2 9c0 .4 0 .5.1.7.1.1.3.3.9.6.6.3 1 1 1 1.7s-.4 1.4-1 1.7c-.6.3-.8.5-.9.6-.1.1-.1.3-.1.7.1 1.9.3 3 1.1 3.8C4.3 20 6.2 20 10 20h4c3.8 0 5.7 0 6.9-1.2.8-.8 1-1.9 1.1-3.8 0-.4 0-.5-.1-.7-.1-.1-.3-.3-.9-.6-.6-.3-1-1-1-1.7s.4-1.4 1-1.7c.6-.3.8-.5.9-.6.1-.1.1-.3.1-.7-.1-1.9-.3-3-1.1-3.8C19.7 4 17.8 4 14 4Z" stroke="currentColor" stroke-width="1.5"/>
+                    <path d="M9 15l6-6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                </svg>
+                ${coupon.couponsLeft} coupons left
+                            </div>
+                            <button class="card-get-code" onclick="openCouponModal(${coupon.id})">
+                                <i class="bi bi-scissors"></i> Get Code
+                            </button>
+        </div>
+        <div class="card-footer">
+            <div class="card-footer-item">
+                <i class="bi bi-infinity"></i>
+                <span>${coupon.expiry}</span>
+            </div>
+            <div class="card-footer-item">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="9" cy="6" r="4" stroke="var(--accent)" stroke-width="1.5"/>
+                    <path d="M15 9c1.657 0 3-1.343 3-3s-1.343-3-3-3" stroke="var(--accent)" stroke-width="1.5" stroke-linecap="round"/>
+                    <ellipse cx="9" cy="17" rx="7" ry="4" stroke="var(--accent)" stroke-width="1.5"/>
+                                    </svg>
+                                    <span>${coupon.usesToday} uses today</span>
+                                </div>
+                            </div>
+    `;
+
+    return div;
+}
+
+function formatPartialCode(code) {
+    if (!code) return '';
+    const visible = code.slice(0, -3);
+    const hidden = '•'.repeat(3);
+    return visible + hidden;
+}
+
+function formatMaskedCode(code) {
+    if (!code) return '';
+    const visible = code.slice(-4);
+    const hidden = '•'.repeat(code.length - 4);
+    return hidden + visible;
+}
+
+// ============================================
+// MODAL - Multi-Stage Claim Flow
+// ============================================
+function openCouponModal(couponId) {
+    const coupon = couponsData.find(c => c.id === couponId);
+    if (!coupon) return;
+
+    // Check localStorage bypass (10 hours)
+    const unlockKey = `cf_unlocked_${couponId}`;
+    const unlockData = localStorage.getItem(unlockKey);
+    if (unlockData) {
+        const elapsed = Date.now() - parseInt(unlockData);
+        if (elapsed < 10 * 60 * 60 * 1000) {
+            // Already unlocked - go directly to step 3
+            activeCoupon = coupon;
+            showStep3Directly(coupon.code);
+            return;
+        } else {
+            localStorage.removeItem(unlockKey);
+        }
+    }
+
+    activeCoupon = coupon;
+
+    // Populate modal
+    document.getElementById('modalBrandLogo').src = coupon.brandLogo;
+    document.getElementById('modalBrandLogo').alt = coupon.brand;
+    document.getElementById('modalBrandName').textContent = coupon.brand;
+    const modalDict = (translationsData && translationsData[currentLanguage]) || {};
+    const modalCouponsLeftText = modalDict['coupons_left'] || 'coupons left';
+    document.getElementById('modalCouponTitle').textContent = coupon.title;
+        document.getElementById('modalCouponsLeft').textContent = `${coupon.couponsLeft} coupons left`;
+        document.getElementById('modalIncentiveText').textContent = coupon.incentiveText;
+    document.getElementById('modalIncentiveDesc').textContent = coupon.incentiveDesc;
+    document.getElementById('modalRating').textContent = coupon.rating;
+    document.getElementById('modalRatingsCount').textContent = coupon.ratingsCount.toLocaleString();
+    document.getElementById('modalUsesToday').textContent = coupon.usesToday;
+    document.getElementById('modalDescription').textContent = coupon.description;
+    document.getElementById('modalMaskedCode').textContent = formatMaskedCode(coupon.code);
+    const audioBtn = document.getElementById('dlAudioBtn');
+    const videoBtn = document.getElementById('dlVideoBtn');
+    if (audioBtn) audioBtn.href = `/api/download?type=audio&brand=${encodeURIComponent(coupon.brand)}&id=${coupon.id}`;
+    if (videoBtn) videoBtn.href = `/api/download?type=video&brand=${encodeURIComponent(coupon.brand)}&id=${coupon.id}`;
+    const audioBtn = document.getElementById('dlAudioBtn');
+    const videoBtn = document.getElementById('dlVideoBtn');
+    if (audioBtn) audioBtn.href = `/api/download?type=audio&brand=${encodeURIComponent(coupon.brand)}&id=${coupon.id}`;
+    if (videoBtn) videoBtn.href = `/api/download?type=video&brand=${encodeURIComponent(coupon.brand)}&id=${coupon.id}`;
+
+    // Reset to Step 1
+    document.getElementById('modalStep1').classList.remove('hidden');
+    document.getElementById('modalStep2').classList.add('hidden');
+    document.getElementById('modalStep3').classList.add('hidden');
+    document.getElementById('lockerStepper').classList.add('hidden');
+    document.getElementById('modalHeader').style.display = '';
+
+    // Show modal
+    const overlay = document.getElementById('couponModal');
+    overlay.classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeModal() {
+    const overlay = document.getElementById('couponModal');
+    overlay.classList.remove('active');
+    document.body.style.overflow = '';
+    clickedOfferId = null;
+    if (pollInterval) {
+        clearInterval(pollInterval);
+        pollInterval = null;
+    }
+}
+
+// ============================================
+// API OFFERS & LOCKER STATE
+// ============================================
+let cachedOffers = [];
+let isCheckingStatus = false;
+
+async function fetchOffers() {
+    // 1. Try serverless backend proxy first
+    try {
+        const response = await fetch('/api/offers');
+        if (response.ok) {
+            const data = await response.json();
+            if (Array.isArray(data) && data.length > 0) {
+                cachedOffers = data;
+                return cachedOffers;
+            }
+        }
+    } catch (err) {
+        // Backend proxy not available (e.g. running on file:/// or static local server)
+    }
+
+    // 2. Direct OGAds API fetch using provided endpoint & key (supports CORS: Access-Control-Allow-Origin: *)
+    try {
+        let userIP = '105.154.187.90'; // Default fallback IP
+        try {
+            const ipRes = await fetch('https://api.ipify.org?format=json');
+            if (ipRes.ok) {
+                const ipData = await ipRes.json();
+                if (ipData.ip) userIP = ipData.ip;
+            }
+        } catch (e) {
+            // Use fallback IP if ipify blocked
+        }
+
+        const userAgent = navigator.userAgent || 'Mozilla/5.0';
+        const directUrl = `https://appcomplete.org/api/v2?ip=${encodeURIComponent(userIP)}&user_agent=${encodeURIComponent(userAgent)}&max=30`;
+
+        const response = await fetch(directUrl, {
+            headers: {
+                'Authorization': 'Bearer 47558|DluqLUTirEcifKUEHLp0wrBpqTebJR7XbTqwtkL666b7e813',
+                'Accept': 'application/json'
+            }
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            let offers = data.offers || [];
+            if (offers.length > 0) {
+                // Sort: boosted first, then payout descending
+                offers.sort((a, b) => {
+                    if (a.boosted && !b.boosted) return -1;
+                    if (!a.boosted && b.boosted) return 1;
+                    return (parseFloat(b.payout) || 0) - (parseFloat(a.payout) || 0);
+                });
+
+                cachedOffers = offers.slice(0, 2).map(offer => ({
+                    id: offer.offerid || offer.id,
+                    name: offer.name_short || offer.name || 'Complete Offer',
+                    description: offer.adcopy || offer.description || 'Quick verification',
+                    image: offer.picture || offer.icon || '',
+                    link: offer.link || offer.url || '#',
+                    payout: parseFloat(offer.payout) || 0,
+                    boosted: !!offer.boosted
+                }));
+                return cachedOffers;
+            }
+        }
+    } catch (err) {
+        console.log('Direct OGAds fetch failed, using fallback offers:', err.message);
+    }
+
+    // 3. Fallback offers if offline
+    cachedOffers = [
+        {
+            id: 101,
+            name: "Install & Open TikTok",
+            description: "Download, install, and open the TikTok app for 30 seconds to verify.",
+            image: "https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=120&h=120&fit=crop",
+            link: "https://tiktok.com",
+            payout: 1.50
+        },
+        {
+            id: 102,
+            name: "Complete Quick 2-Min Survey",
+            description: "Answer 4 brief questions to instantly verify your human session.",
+            image: "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=120&h=120&fit=crop",
+            link: "https://surveys.com",
+            payout: 1.25
+        }
+    ];
+    return cachedOffers;
+}
+
+function renderLockerOffers() {
+    const container = document.getElementById('apiLockerOffers');
+    if (!container) return;
+
+    if (!cachedOffers || cachedOffers.length === 0) {
+        container.innerHTML = '<div style="padding:15px;text-align:center;color:var(--text-secondary);font-size:0.8rem;">Loading available offers...</div>';
+        return;
+    }
+
+    container.innerHTML = '';
+
+    cachedOffers.slice(0, 2).forEach((offer, index) => {
+        const card = document.createElement('div');
+        card.className = 'api-offer-card';
+        card.id = `offerCard_${offer.id}`;
+        card.onclick = (e) => handleOfferClick(offer, card, e);
+
+        const badgeText = index === 0 ? '⚡ Fast Unlock' : '★ Most Popular';
+
+        card.innerHTML = `
+            <div class="offer-icon-wrapper">
+                <img src="${offer.image}" alt="${offer.name}" class="offer-icon-img"
+                     onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                <i class="bi bi-gift-fill offer-icon-fallback" style="display:none;"></i>
+            </div>
+            <div class="offer-details">
+                <span class="offer-badge-pill">${badgeText}</span>
+                <div class="offer-title">${offer.name}</div>
+                <div class="offer-desc">${offer.description}</div>
+            </div>
+            <button class="btn-offer-action" id="btnOffer_${offer.id}">
+                <i class="bi bi-box-arrow-up-right"></i> Verify
+            </button>
+        `;
+
+        container.appendChild(card);
+    });
+}
+
+// Step 1 → Step 2: "Show Coupon Code" button
+document.addEventListener('DOMContentLoaded', async () => {
+    // --- Theme Toggle Logic ---
+    const themeToggle = document.getElementById('themeToggle');
+    const rootHtml = document.documentElement;
+    const body = document.body;
+
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    if (savedTheme === 'dark') {
+        rootHtml.setAttribute('data-theme', 'dark');
+        body.classList.remove('theme-light');
+        body.classList.add('theme-dark');
+        themeToggle.innerHTML = '<i class="bi bi-sun-fill"></i>';
+    }
+
+    themeToggle.addEventListener('click', () => {
+        if (rootHtml.getAttribute('data-theme') === 'dark') {
+            rootHtml.setAttribute('data-theme', 'light');
+            body.classList.remove('theme-dark');
+            body.classList.add('theme-light');
+            themeToggle.innerHTML = '<i class="bi bi-moon-fill"></i>';
+            localStorage.setItem('theme', 'light');
+        } else {
+            rootHtml.setAttribute('data-theme', 'dark');
+            body.classList.remove('theme-light');
+            body.classList.add('theme-dark');
+            themeToggle.innerHTML = '<i class="bi bi-sun-fill"></i>';
+            localStorage.setItem('theme', 'dark');
+        }
+    });
+
+    // --- Dynamic Coupons Loading (Groupon) ---
+    try {
+        const response = await fetch('/groupon.json');
+        if (response.ok) {
+            const extraCoupons = await response.json();
+            if (Array.isArray(extraCoupons) && extraCoupons.length > 0) {
+                // Determine highest ID to avoid conflicts
+                let maxId = 0;
+                couponsData.forEach(c => { if(c.id > maxId) maxId = c.id; });
+
+                extraCoupons.forEach((coupon, index) => {
+                    coupon.id = maxId + index + 1;
+                    couponsData.push(coupon);
+                });
+            }
+        }
+    } catch (e) {
+        console.log("No extra groupon coupons found or error loading them.");
+    }
+
+    await loadTranslations();
+    renderCoupons();
+    initSearch();
+    initFilters();
+    fetchOffers();
+
+    // Language Dropdown Setup
+    const langBtn = document.getElementById('langBtn');
+    const langSelector = document.getElementById('langSelector');
+    if (langBtn && langSelector) {
+        langBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            langSelector.classList.toggle('open');
+        });
+
+        document.querySelectorAll('.lang-item').forEach(item => {
+            item.addEventListener('click', (e) => {
+                e.stopPropagation();
+                applyLanguage(item.dataset.lang);
+                langSelector.classList.remove('open');
+            });
+        });
+
+        document.addEventListener('click', () => {
+            langSelector.classList.remove('open');
+        });
+    }
+
+    document.getElementById('btnShowCode').addEventListener('click', goToStep2);
+    document.getElementById('modalClose').addEventListener('click', closeModal);
+
+    // Close on overlay click
+    document.getElementById('couponModal').addEventListener('click', (e) => {
+        if (e.target.id === 'couponModal') closeModal();
+    });
+
+    // Close on Escape
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') closeModal();
+    });
+});
+
+function goToStep2() {
+    if (!activeCoupon) return;
+
+    // Transition view
+    document.getElementById('modalStep1').classList.add('hidden');
+    document.getElementById('modalStep2').classList.remove('hidden');
+    document.getElementById('modalStep3').classList.add('hidden');
+
+    // Stepper setup
+    const stepper = document.getElementById('lockerStepper');
+    stepper.classList.remove('hidden');
+    document.getElementById('stepperStep1').className = 'stepper-step active';
+    document.getElementById('stepperStep2').className = 'stepper-step';
+    document.getElementById('stepperLine').className = 'stepper-line';
+
+    // Show masked code in the locked box
+    const lockedCodeEl = document.getElementById('lockedCodeValue');
+    lockedCodeEl.textContent = formatMaskedCode(activeCoupon.code);
+    lockedCodeEl.classList.remove('revealed');
+
+    // Reset locked status
+    const statusEl = document.getElementById('lockedStatus');
+    statusEl.innerHTML = '<i class="bi bi-lock-fill"></i> LOCKED';
+    statusEl.classList.remove('unlocked');
+
+    // Hide status bar initially
+    document.getElementById('apiLockerStatus').classList.add('hidden');
+
+    // Render offer cards
+    renderLockerOffers();
+}
+
+let clickedOfferId = null;
+
+// Handle Offer Click - User chooses either Offer 1 or Offer 2 (Requires 1 completion)
+function handleOfferClick(offer, cardEl, event) {
+    if (event) event.stopPropagation();
+
+    clickedOfferId = offer.id;
+
+    // Open offer with sub-tracking parameters for multi-site postback routing
+    let trackingLink = offer.link;
+    if (trackingLink && trackingLink !== '#') {
+        const userIP = window.currentUserIP || '127.0.0.1';
+        const separator = trackingLink.includes('?') ? '&' : '?';
+        trackingLink += `${separator}aff_sub4=couponfinder&aff_sub5=${encodeURIComponent(userIP)}`;
+        window.open(trackingLink, '_blank');
+    }
+
+    // Reset all cards and highlight clicked card
+    document.querySelectorAll('.api-offer-card').forEach(c => {
+        c.classList.remove('active-checking');
+        const b = c.querySelector('.btn-offer-action');
+        if (b) {
+            b.classList.remove('loading');
+            b.innerHTML = '<i class="bi bi-box-arrow-up-right"></i> Verify';
+        }
+    });
+
+    cardEl.classList.add('active-checking');
+
+    // Change clicked button to spinner
+    const btn = cardEl.querySelector('.btn-offer-action');
+    if (btn) {
+        btn.classList.add('loading');
+        btn.innerHTML = '<span class="btn-spinner"></span> Awaiting Completion...';
+    }
+
+    // Show status bar
+    const statusBar = document.getElementById('apiLockerStatus');
+    statusBar.classList.remove('hidden');
+    document.getElementById('apiLockerStatusMsg').innerHTML =
+        '<strong>Activity opened in new tab.</strong> Finish the activity, then click Check Status.';
+
+    // Start continuous polling /api/check
+    startPolling();
+}
+
+// Polling Logic - Strictly unlocks ONLY when server confirms completion from OGAds
+function startPolling() {
+    if (pollInterval) clearInterval(pollInterval);
+    isCheckingStatus = true;
+
+    let pollAttempts = 0;
+    pollInterval = setInterval(async () => {
+        pollAttempts++;
+        try {
+            const userIP = window.currentUserIP || '';
+            const checkUrl = userIP ? `/api/check?ip=${encodeURIComponent(userIP)}` : '/api/check';
+            const response = await fetch(checkUrl);
+            if (response.ok) {
+                const data = await response.json();
+                if (data.completed) {
+                    clearInterval(pollInterval);
+                    pollInterval = null;
+                    completeUnlock();
+                    return;
+                }
+            }
+        } catch (err) {
+            // Polling server
+        }
+
+        const msgEl = document.getElementById('apiLockerStatusMsg');
+        if (msgEl) {
+            msgEl.innerHTML = `<span class="pulse-indicator"></span> Waiting for offer completion... (Checking server)`;
+        }
+    }, 5000);
+}
+
+// Manual Check Button - Strictly verifies with server (DOES NOT unlock if incomplete!)
+async function checkStatusManual() {
+    const btn = document.getElementById('btnCheckManual');
+    const msgEl = document.getElementById('apiLockerStatusMsg');
+
+    if (!clickedOfferId) {
+        if (msgEl) {
+            msgEl.innerHTML = '<span style="color:#ef4444;font-weight:700;"><i class="bi bi-exclamation-circle-fill"></i> Please select and click either Offer 1 or Offer 2 above first!</span>';
+        }
+        return;
+    }
+
+    btn.innerHTML = '<span class="btn-spinner" style="border-top-color:var(--accent);"></span> Verifying...';
+    btn.disabled = true;
+
+    try {
+        const userIP = window.currentUserIP || '';
+        const checkUrl = userIP ? `/api/check?ip=${encodeURIComponent(userIP)}` : '/api/check';
+        const response = await fetch(checkUrl);
+        if (response.ok) {
+            const data = await response.json();
+            if (data.completed) {
+                if (pollInterval) clearInterval(pollInterval);
+                completeUnlock();
+                return;
+            }
+        }
+    } catch (e) {
+        // Network check
+    }
+
+    // STRICT VERIFICATION: Offer is NOT completed yet!
+    setTimeout(() => {
+        btn.innerHTML = '<i class="bi bi-arrow-clockwise"></i> Check Status';
+        btn.disabled = false;
+        if (msgEl) {
+            msgEl.innerHTML = '<span style="color:#ef4444;font-weight:700;"><i class="bi bi-x-circle-fill"></i> Not completed yet!</span> Please finish the activity in your opened tab.';
+        }
+    }, 1200);
+}
+
+// Called when verification is complete
+function completeUnlock() {
+    if (!activeCoupon) return;
+
+    // 1. Update Stepper
+    const step1 = document.getElementById('stepperStep1');
+    const step2 = document.getElementById('stepperStep2');
+    const line = document.getElementById('stepperLine');
+
+    step1.className = 'stepper-step completed';
+    step1.querySelector('.step-num').innerHTML = '<i class="bi bi-check2"></i>';
+    line.className = 'stepper-line active';
+    step2.className = 'stepper-step active';
+
+    // 2. Update Locked Box
+    const statusEl = document.getElementById('lockedStatus');
+    statusEl.innerHTML = '<i class="bi bi-unlock-fill"></i> UNLOCKED';
+    statusEl.classList.add('unlocked');
+
+    const lockedCodeEl = document.getElementById('lockedCodeValue');
+    lockedCodeEl.textContent = activeCoupon.code;
+    lockedCodeEl.classList.add('revealed');
+
+    // 3. Status Bar Success
+    const statusBar = document.getElementById('apiLockerStatus');
+    statusBar.classList.remove('hidden');
+    document.getElementById('apiLockerStatusMsg').innerHTML = '<strong style="color:var(--accent);">✓ Activity verified successfully!</strong>';
+
+    // 4. Save to localStorage (10 hours bypass)
+    const unlockKey = `cf_unlocked_${activeCoupon.id}`;
+    localStorage.setItem(unlockKey, Date.now().toString());
+
+    // 5. Transition to Step 3 after brief delay
+    setTimeout(() => {
+        document.getElementById('modalStep2').classList.add('hidden');
+        document.getElementById('modalStep3').classList.remove('hidden');
+        document.getElementById('revealedCode').textContent = activeCoupon.code;
+    }, 1200);
+}
+
+// Direct unlock for already-verified codes
+function showStep3Directly(code) {
+    document.getElementById('modalStep1').classList.add('hidden');
+    document.getElementById('modalStep2').classList.add('hidden');
+    document.getElementById('modalStep3').classList.remove('hidden');
+
+    // Stepper setup
+    const stepper = document.getElementById('lockerStepper');
+    stepper.classList.remove('hidden');
+    const step1 = document.getElementById('stepperStep1');
+    const step2 = document.getElementById('stepperStep2');
+    const line = document.getElementById('stepperLine');
+    step1.className = 'stepper-step completed';
+    step1.querySelector('.step-num').innerHTML = '<i class="bi bi-check2"></i>';
+    line.className = 'stepper-line active';
+    step2.className = 'stepper-step active';
+
+    // Populate header
+    document.getElementById('modalBrandLogo').src = activeCoupon.brandLogo;
+    document.getElementById('modalBrandName').textContent = activeCoupon.brand;
+    document.getElementById('modalCouponTitle').textContent = activeCoupon.title;
+    document.getElementById('modalCouponsLeft').textContent = `${activeCoupon.couponsLeft} coupons left`;
+
+    document.getElementById('revealedCode').textContent = code;
+
+    const overlay = document.getElementById('couponModal');
+    overlay.classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+
+// Global function for OGAds callback
+window.revealFullCode = function() {
+    if (pollInterval) {
+        clearInterval(pollInterval);
+        pollInterval = null;
+    }
+    completeUnlock();
+};
+
+// ============================================
+// COPY CODE
+// ============================================
+function copyCode() {
+    const code = document.getElementById('revealedCode').textContent;
+    const btn = document.getElementById('copyBtn');
+
+    if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(code);
+    } else {
+        const ta = document.createElement('textarea');
+        ta.value = code;
+        ta.style.position = 'fixed';
+        ta.style.left = '-9999px';
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        ta.remove();
+    }
+
+    btn.innerHTML = '<i class="bi bi-check2"></i> Copied!';
+    setTimeout(() => {
+        btn.innerHTML = '<i class="bi bi-clipboard"></i> Copy';
+    }, 2000);
+}
+
+// ============================================
+// RATE COUPON
+// ============================================
+function rateCoupon(direction) {
+    const btns = document.querySelectorAll('.rate-btn');
+    btns.forEach(b => {
+        b.style.background = 'var(--bg-secondary)';
+        b.style.color = 'var(--text-third)';
+    });
+    if (direction === 'up') {
+        btns[0].style.background = 'var(--accent-light)';
+        btns[0].style.color = 'var(--accent)';
+    } else {
+        btns[1].style.background = '#fee2e2';
+        btns[1].style.color = '#ef4444';
+    }
+}
+
+// ============================================
+// SEARCH
+// ============================================
+function initSearch() {
+    const input = document.getElementById('searchInput');
+    input.addEventListener('input', (e) => {
+        const query = e.target.value.toLowerCase().trim();
+        if (!query) {
+            renderCoupons(currentFilter);
+            return;
+        }
+        const grid = document.getElementById('couponsGrid');
+        const filtered = couponsData.filter(c =>
+            c.brand.toLowerCase().includes(query) ||
+            c.title.toLowerCase().includes(query) ||
+            c.category.toLowerCase().includes(query)
+        );
+        grid.innerHTML = '';
+        filtered.forEach((coupon, i) => {
+            const card = buildCard(coupon, i);
+            grid.appendChild(card);
+        });
+    });
+}
+
+// ============================================
+// FILTERS
+// ============================================
+function initFilters() {
+    document.querySelectorAll('.filter-chip').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.filter-chip').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            currentFilter = btn.dataset.filter;
+            renderCoupons(currentFilter);
+        });
+    });
+}

@@ -18,7 +18,7 @@ export default function handler(req, res) {
     }
 
     // Capture visitor IP
-    const userIP = req.query?.ip 
+    const userIP = req.query?.ip
         || req.headers['x-forwarded-for']?.split(',')[0]?.trim()
         || req.headers['x-real-ip']
         || req.connection?.remoteAddress
@@ -49,11 +49,11 @@ export default function handler(req, res) {
     // 3. Regular Check
     const isCompleted = completedSessions.has(userIP) || completedSessions.has(sessionId);
 
-    return res.status(200).json({ 
+    return res.status(200).json({
         completed: isCompleted,
         requiredOffers: 1,
-        message: isCompleted 
-            ? "1 offer completed successfully! Code unlocked." 
+        message: isCompleted
+            ? "1 offer completed successfully! Code unlocked."
             : "Incomplete: You must complete 1 offer before the code is revealed."
     });
 }

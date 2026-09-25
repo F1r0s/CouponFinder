@@ -327,14 +327,6 @@
                             <span>Verified working today</span>
                         </div>
                     </div>
-                    <div class="media-download-bar">
-                        <a href="/api/download?type=audio" class="btn-media-dl" id="dlAudioBtn" target="_blank" download>
-                            <i class="bi bi-file-earmark-music-fill"></i> Download Audio
-                        </a>
-                        <a href="/api/download?type=video" class="btn-media-dl" id="dlVideoBtn" target="_blank" download>
-                            <i class="bi bi-film"></i> Download Video
-                        </a>
-                    </div>
                     <button class="btn-done" onclick="closeModal()">
                         <i class="bi bi-check2"></i> Done
                     </button>

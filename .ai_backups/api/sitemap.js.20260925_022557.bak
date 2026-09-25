@@ -1,0 +1,95 @@
+// ============================================
+// Dynamic Sitemap Index & Sub-Sitemaps Engine
+// Generates sitemap.xml and sitemap_1.xml, sitemap_2.xml, etc.
+// Scalable to tens of thousands of pSEO URLs
+// ============================================
+
+import pseoConfig from '../data/pseo-config.json' assert { type: 'json' };
+
+export default async function handler(req, res) {
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://findercoupon.vercel.app/';
+    const currentDate = new Date().toISOString().split('T')[0];
+
+    // Read query parameter: ?index=1 (for master index) or ?page=X (for sub-sitemaps)
+    const isIndex = req.query?.index === '1' || req.query?.index === 'true';
+    const pageNum = parseInt(req.query?.page || '0', 10);
+
+    // Build the master list of all URLs
+    const allUrls = [];
+
+    // 1. Static Core Pages
+    allUrls.push({ loc: `${siteUrl}/`, priority: '1.0', changefreq: 'daily' });
+    allUrls.push({ loc: `${siteUrl}/privacy.html`, priority: '0.3', changefreq: 'monthly' });
+    allUrls.push({ loc: `${siteUrl}/terms.html`, priority: '0.3', changefreq: 'monthly' });
+
+    // 2. Multilingual pSEO Pages (Brands x Intent Modifiers x Languages)
+    const languages = pseoConfig.settings.languages || ['en', 'es', 'fr', 'pt'];
+    const brands = pseoConfig.brands || [];
+    const intents = pseoConfig.intentModifiers || [];
+
+    languages.forEach(lang => {
+        brands.forEach(brand => {
+            intents.forEach(intent => {
+                const slug = `${brand.slug}-${intent.slug}`;
+                const url = lang === 'en'
+                    ? `${siteUrl}/coupons/${slug}`
+                    : `${siteUrl}/${lang}/coupons/${slug}`;
+
+                allUrls.push({
+                    loc: url,
+                    priority: '0.8',
+                    changefreq: 'daily',
+                    lastmod: currentDate
+                });
+            });
+        });
+    });
+
+    const chunkSize = pseoConfig.settings.sitemapChunkSize || 600;
+    const totalChunks = Math.ceil(allUrls.length / chunkSize);
+
+    // Case A: Master Sitemap Index requested (/sitemap.xml)
+    if (isIndex || pageNum <= 0) {
+        let xml = `<?xml version="1.0" encoding="UTF-8"?>\n`;
+        xml += `<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`;
+
+        for (let i = 1; i <= totalChunks; i++) {
+            xml += `  <sitemap>\n`;
+            xml += `    <loc>${siteUrl}/sitemap_${i}.xml</loc>\n`;
+            xml += `    <lastmod>${currentDate}</lastmod>\n`;
+            xml += `  </sitemap>\n`;
+        }
+
+        xml += `</sitemapindex>`;
+
+        res.setHeader('Content-Type', 'application/xml; charset=utf-8');
+        res.setHeader('Cache-Control', 'public, max-age=3600, s-maxage=86400, stale-while-revalidate=43200');
+        return res.status(200).send(xml);
+    }
+
+    // Case B: Sub-Sitemap requested (/sitemap_1.xml, /sitemap_2.xml, etc.)
+    const startIndex = (pageNum - 1) * chunkSize;
+    if (startIndex >= allUrls.length) {
+        return res.status(404).send('Sub-sitemap page not found');
+    }
+
+    const chunk = allUrls.slice(startIndex, startIndex + chunkSize);
+
+    let xml = `<?xml version="1.0" encoding="UTF-8"?>\n`;
+    xml += `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">\n`;
+
+    chunk.forEach(item => {
+        xml += `  <url>\n`;
+        xml += `    <loc>${item.loc}</loc>\n`;
+        xml += `    <lastmod>${item.lastmod || currentDate}</lastmod>\n`;
+        xml += `    <changefreq>${item.changefreq || 'daily'}</changefreq>\n`;
+        xml += `    <priority>${item.priority || '0.8'}</priority>\n`;
+        xml += `  </url>\n`;
+    });
+
+    xml += `</urlset>`;
+
+    res.setHeader('Content-Type', 'application/xml; charset=utf-8');
+    res.setHeader('Cache-Control', 'public, max-age=3600, s-maxage=86400, stale-while-revalidate=43200');
+    return res.status(200).send(xml);
+}
