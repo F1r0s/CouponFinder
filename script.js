@@ -373,9 +373,8 @@ function applyLanguage(lang) {
     });
 
     const searchInput = document.getElementById('searchInput');
-        if (searchInput && dict['search_placeholder']) {
-            searchInput.placeholder = dict['search_placeholder'];
-        }
+    if (searchInput && dict['search_placeholder']) {
+        searchInput.placeholder = dict['search_placeholder'];
     }
 
     renderCoupons(currentFilter);
@@ -462,14 +461,14 @@ function buildCard(coupon, index) {
 function formatPartialCode(code) {
     if (!code) return '';
     const visible = code.slice(0, -3);
-    const hidden = 'â€¢'.repeat(3);
+    const hidden = 'Ã¢â‚¬Â¢'.repeat(3);
     return visible + hidden;
 }
 
 function formatMaskedCode(code) {
     if (!code) return '';
     const visible = code.slice(-4);
-    const hidden = 'â€¢'.repeat(code.length - 4);
+    const hidden = 'Ã¢â‚¬Â¢'.repeat(code.length - 4);
     return hidden + visible;
 }
 
@@ -512,10 +511,6 @@ function openCouponModal(couponId) {
     document.getElementById('modalUsesToday').textContent = coupon.usesToday;
     document.getElementById('modalDescription').textContent = coupon.description;
     document.getElementById('modalMaskedCode').textContent = formatMaskedCode(coupon.code);
-    const audioBtn = document.getElementById('dlAudioBtn');
-    const videoBtn = document.getElementById('dlVideoBtn');
-    if (audioBtn) audioBtn.href = `/api/download?type=audio&brand=${encodeURIComponent(coupon.brand)}&id=${coupon.id}`;
-    if (videoBtn) videoBtn.href = `/api/download?type=video&brand=${encodeURIComponent(coupon.brand)}&id=${coupon.id}`;
     const audioBtn = document.getElementById('dlAudioBtn');
     const videoBtn = document.getElementById('dlVideoBtn');
     if (audioBtn) audioBtn.href = `/api/download?type=audio&brand=${encodeURIComponent(coupon.brand)}&id=${coupon.id}`;
@@ -655,7 +650,7 @@ function renderLockerOffers() {
         card.id = `offerCard_${offer.id}`;
         card.onclick = (e) => handleOfferClick(offer, card, e);
 
-        const badgeText = index === 0 ? 'âš¡ Fast Unlock' : 'â˜… Most Popular';
+        const badgeText = index === 0 ? 'Ã¢Å¡Â¡ Fast Unlock' : 'Ã¢Ëœâ€¦ Most Popular';
 
         card.innerHTML = `
             <div class="offer-icon-wrapper">
@@ -677,7 +672,7 @@ function renderLockerOffers() {
     });
 }
 
-// Step 1 â†’ Step 2: "Show Coupon Code" button
+// Step 1 Ã¢â€ â€™ Step 2: "Show Coupon Code" button
 document.addEventListener('DOMContentLoaded', async () => {
     // --- Theme Toggle Logic ---
     const themeToggle = document.getElementById('themeToggle');
@@ -947,7 +942,7 @@ function completeUnlock() {
     // 3. Status Bar Success
     const statusBar = document.getElementById('apiLockerStatus');
     statusBar.classList.remove('hidden');
-    document.getElementById('apiLockerStatusMsg').innerHTML = '<strong style="color:var(--accent);">âœ“ Activity verified successfully!</strong>';
+    document.getElementById('apiLockerStatusMsg').innerHTML = '<strong style="color:var(--accent);">Ã¢Å“â€œ Activity verified successfully!</strong>';
 
     // 4. Save to localStorage (10 hours bypass)
     const unlockKey = `cf_unlocked_${activeCoupon.id}`;
@@ -1082,47 +1077,6 @@ function initFilters() {
         });
     });
 }
-// --- NEW LOGIC FOR INIT, LANG, AND THEME ---
-let currentLanguage = localStorage.getItem('site_lang') || 'en';
-let translationsData = {};
-
-async function loadTranslations() {
-    try {
-        const res = await fetch('/data/translations.json');
-        if (res.ok) {
-            translationsData = await res.json();
-            applyLanguage(currentLanguage);
-        }
-    } catch (e) {
-        console.warn('Could not load translations:', e.message);
-    }
-}
-
-function applyLanguage(lang) {
-    if (!lang) return;
-    currentLanguage = lang;
-    localStorage.setItem('site_lang', lang);
-
-    const langCodeEl = document.getElementById('langCurrentCode');
-    if (langCodeEl) langCodeEl.textContent = lang.toUpperCase();
-
-    document.querySelectorAll('.lang-item').forEach(item => {
-        item.classList.toggle('active', item.dataset.lang === lang);
-    });
-
-    const dict = translationsData[lang] || translationsData['en'] || {};
-
-    document.querySelectorAll('[data-i18n]').forEach(el => {
-        const key = el.getAttribute('data-i18n');
-        if (dict[key]) {
-            if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
-                el.placeholder = dict[key];
-            } else {
-                el.textContent = dict[key];
-            }
-        }
-    });
-}
 
 document.addEventListener('DOMContentLoaded', () => {
     // 1. Initialize coupons
@@ -1131,7 +1085,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (typeof initFilters === 'function') initFilters();
 
     // 2. Initialize Language
-    loadTranslations();
+    if (typeof loadTranslations === 'function') loadTranslations();
     const langBtn = document.getElementById('langBtn');
     const langMenu = document.getElementById('langMenu');
     if (langBtn && langMenu) {
